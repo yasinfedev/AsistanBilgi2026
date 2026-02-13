@@ -75,17 +75,46 @@
       letter-spacing: -.01em;
     }
     .option-btn{
-      text-align:left;
-      width:100%;
-      border-radius: 14px;
-      padding: 1rem 1rem;
-      font-weight: 750;
-      border:1px solid rgba(0,0,0,.08);
-      background:#fff;
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .option-btn:hover{ transform: translateY(-1px); box-shadow: 0 10px 18px rgba(0,0,0,.06); }
-    .option-btn:disabled{ opacity:1; cursor:default; transform:none; box-shadow:none; }
+  text-align:left;
+  width:100%;
+  border-radius: 16px;
+  padding: 1.05rem 1.1rem;
+  font-weight: 800;
+
+  background: #f8f9fb;                 /* ✅ hafif gri arkaplan */
+  border: 2px solid rgba(0,0,0,.10);    /* ✅ daha belirgin sınır */
+  color: #212529;                       /* ✅ yazı koyu */
+  
+  transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, border-color .12s ease;
+}
+
+.option-btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(0,0,0,.08);
+  background: #ffffff;
+  border-color: rgba(0,0,0,.18);
+}
+
+.option-btn:disabled{
+  opacity: 1;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+.opt-letter{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  margin-right: 12px;
+  font-weight: 900;
+  background: rgba(0,0,0,.08);
+  border: 1px solid rgba(0,0,0,.10);
+}
+    
 
     .timer-badge{
       font-variant-numeric: tabular-nums;
@@ -1127,10 +1156,10 @@ if(cat.key === 'BONUS') chip.classList.add('text-bg-primary');
       $('chipMode').classList.toggle('d-none', !state.tieBreak);
 
       $('questionText').textContent = q.question;
-      $('optA').textContent = 'A) ' + q.options.A;
-      $('optB').textContent = 'B) ' + q.options.B;
-      $('optC').textContent = 'C) ' + q.options.C;
-      $('optD').textContent = 'D) ' + q.options.D;
+      $('optA').innerHTML = `<span class="opt-letter">A</span><span>${escapeHtml(q.options.A)}</span>`;
+$('optB').innerHTML = `<span class="opt-letter">B</span><span>${escapeHtml(q.options.B)}</span>`;
+$('optC').innerHTML = `<span class="opt-letter">C</span><span>${escapeHtml(q.options.C)}</span>`;
+$('optD').innerHTML = `<span class="opt-letter">D</span><span>${escapeHtml(q.options.D)}</span>`;
 
       // reset option styles
       for(const id of ['optA','optB','optC','optD']){
