@@ -1090,6 +1090,9 @@ Ankara Resüs
       timer: { seconds:30, remaining:30, interval:null },
       usedQuestionIds: new Set(),
       cutoff: null,            // 4 for stage1, 3 for stage2, 1 for final winner
+            tieBreakQuestionsAsked: 0,     // tie-breakte kaç soru soruldu
+      tieSafeNames: [],              // cutoff puanının üstünde kalan "güvenli" takımlar
+      pendingComp: null,             // { amount:number, names:[...] } -> sonraki aşama başında eklenecek
     };
 
     const STAGES = [
@@ -1382,6 +1385,10 @@ function cssSafe(s){
   // Her takım için seçili radio: data-correct="1" ise doğru
   const radios = $('pointsEntryBody').querySelectorAll('input[type="radio"][data-team]:checked');
 
+        if(state.tieBreak){
+    state.tieBreakQuestionsAsked += 1; // ✅ her kaydedilen tie-break = 1 bonus soru
+  }
+
   radios.forEach(r => {
     const name = r.getAttribute('data-team');
     const isCorrect = r.getAttribute('data-correct') === "1";
@@ -1407,6 +1414,19 @@ function cssSafe(s){
       state.tieBreak = false;
       state.tieCandidates = [];
       state.activeTeamNames = participantNames.slice();
+            // ✅ Önceki aşamadan tie-break kompanzasyonu varsa, yeni aşama başında uygula
+      if(state.pendingComp && state.pendingComp.amount > 0){
+        const { amount, names } = state.pendingComp;
+
+        participantNames.forEach(n=>{
+          if(names.includes(n)){
+            const team = state.teams.find(t=>t.name===n);
+            if(team) team.score += amount;
+          }
+        });
+
+        state.pendingComp = null; // ✅ bir kere uygula
+      }
 
       showScreen('screenQuestion');
       nextQuestion();
@@ -1510,23 +1530,24 @@ function cssSafe(s){
       const tie = computeCutoffTie(state.activeTeamNames, cutoff);
       const tieInfo = $('tieInfo');
 
-      if(tie.hasTie){
-        // ✅ scoreboard'a girme, direkt tie-break'e dön
-  stopStandby(); // scoreboard standby'ı varsa kapat
-  state.tieBreak = true;
-  state.tieCandidates = tie.tiedNames.slice();
+            if(tie.hasTie){
+        // ✅ cutoff puanını ve güvenli takımları hesapla
+        const cutoffScore = sorted[cutoff-1].score;
 
-  showScreen('screenQuestion');
-  nextQuestion();
-  return;
-      }else{
-        tieInfo.classList.add('d-none');
-        $('btnProceedNextStage').classList.remove('d-none');
-        if(state.stageIndex === 1) $('btnProceedNextStage').textContent = '2.AŞAMAYA GEÇ';
-        else if(state.stageIndex === 2) $('btnProceedNextStage').textContent = 'FİNALE GEÇ';
-        else $('btnProceedNextStage').textContent = 'ŞAMPİYONU GÖSTER';
+        state.tieBreak = true;
+        state.tieCandidates = tie.tiedNames.slice();
+
+        state.tieBreakQuestionsAsked = 0; // ✅ sıfırla
+        state.tieSafeNames = sorted
+          .filter(t => t.score > cutoffScore)   // ✅ baraj puanının ÜSTÜNDE kalanlar
+          .map(t => t.name);
+
+        // ✅ scoreboard'a girme, direkt tie-break'e dön
+        stopStandby();
+        showScreen('screenQuestion');
+        nextQuestion();
+        return;
       }
-    }
 
     function proceedFromScoreboard(){
       stopStandby();
@@ -1646,13 +1667,28 @@ pointsModalEl.addEventListener('hidden.bs.modal', ()=>{
 
       
 
-      if(state.tieBreak){
+            if(state.tieBreak){
         const candSorted = sortTeamsByScore(state.tieCandidates);
         const top = candSorted[0]?.score ?? 0;
         const allSame = candSorted.every(t=>t.score === top);
+
         if(!allSame){
+          // ✅ tie-break bitti -> güvenli takımlara kompanzasyon hazırla
+          const compAmount = state.tieBreakQuestionsAsked * CATEGORY.BONUS.points; // N * 5
+
+          // Sadece 1. aşama veya 2. aşamada anlamlı (sonraki aşama varsa)
+          if(state.stageIndex === 1 || state.stageIndex === 2){
+            state.pendingComp = {
+              amount: compAmount,
+              names: state.tieSafeNames.slice()
+            };
+          }
+
+          // ✅ tie-break temizle
           state.tieBreak = false;
           state.tieCandidates = [];
+          state.tieSafeNames = [];
+          state.tieBreakQuestionsAsked = 0;
         }
       }
     });
