@@ -1482,111 +1482,117 @@ function cssSafe(s){
     }
 
     function showScoreboardForStage(){
-      startStandby();
-      showScreen('screenScoreboard');
+  startStandby();
+  showScreen('screenScoreboard');
 
-      const sorted = sortTeamsByScore(state.activeTeamNames);
-      const cutoff = state.cutoff;
+  const sorted = sortTeamsByScore(state.activeTeamNames);
+  const cutoff = state.cutoff;
 
-      $('scoreboardTitle').textContent = `${state.stageName} Puan Tablosu`;
-      if(state.stageIndex === 1){
-        $('scoreboardSubtitle').textContent = `İlk ${cutoff} takım 2.AŞAMAYA çıkar. Cutoff eşitliği varsa bonus tie-break yapılır.`;
-      }else if(state.stageIndex === 2){
-        $('scoreboardSubtitle').textContent = `İlk ${cutoff} takım FİNALE çıkar. Cutoff eşitliği varsa bonus tie-break yapılır.`;
-      }else{
-        $('scoreboardSubtitle').textContent = `Final sonuçları. Eşitlik varsa bonus tie-break ile şampiyon belirlenir.`;
-      }
+  $('scoreboardTitle').textContent = `${state.stageName} Puan Tablosu`;
+  if(state.stageIndex === 1){
+    $('scoreboardSubtitle').textContent = `İlk ${cutoff} takım 2.AŞAMAYA çıkar. Cutoff eşitliği varsa bonus tie-break yapılır.`;
+  }else if(state.stageIndex === 2){
+    $('scoreboardSubtitle').textContent = `İlk ${cutoff} takım FİNALE çıkar. Cutoff eşitliği varsa bonus tie-break yapılır.`;
+  }else{
+    $('scoreboardSubtitle').textContent = `Final sonuçları. Eşitlik varsa bonus tie-break ile şampiyon belirlenir.`;
+  }
 
-      const tbody = $('finalScoreBody');
-      tbody.innerHTML = '';
+  const tbody = $('finalScoreBody');
+  tbody.innerHTML = '';
 
-      sorted.forEach((t, idx)=>{
-        const isQualified = idx < cutoff;
-        let status = isQualified ? 'Üst Tura' : 'Elendi';
-        if(state.stageIndex === 3) status = (idx===0 ? 'ŞAMPİYON' : '—');
+  sorted.forEach((t, idx)=>{
+    const isQualified = idx < cutoff;
+    let status = isQualified ? 'Üst Tura' : 'Elendi';
+    if(state.stageIndex === 3) status = (idx===0 ? 'ŞAMPİYON' : '—');
 
-        const tr = document.createElement('tr');
-        if(idx===0) tr.classList.add('rank-1');
-        if(idx===1) tr.classList.add('rank-2');
-        if(idx===2) tr.classList.add('rank-3');
-        if(idx===3) tr.classList.add('rank-4');
+    const tr = document.createElement('tr');
+    if(idx===0) tr.classList.add('rank-1');
+    if(idx===1) tr.classList.add('rank-2');
+    if(idx===2) tr.classList.add('rank-3');
+    if(idx===3) tr.classList.add('rank-4');
 
-        tr.innerHTML = `
-          <td class="fw-bold">${idx+1}</td>
-          <td class="fw-bold">${escapeHtml(t.name)}</td>
-          <td class="text-end fw-bold fs-5">${t.score}</td>
-          <td class="text-end">
-            <span class="badge ${status==='Üst Tura' ? 'text-bg-success' :
-                                status==='Elendi' ? 'text-bg-secondary' :
-                                status==='ŞAMPİYON' ? 'text-bg-success' : 'text-bg-light'}">
-              ${status}
-            </span>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+    tr.innerHTML = `
+      <td class="fw-bold">${idx+1}</td>
+      <td class="fw-bold">${escapeHtml(t.name)}</td>
+      <td class="text-end fw-bold fs-5">${t.score}</td>
+      <td class="text-end">
+        <span class="badge ${status==='Üst Tura' ? 'text-bg-success' :
+                            status==='Elendi' ? 'text-bg-secondary' :
+                            status==='ŞAMPİYON' ? 'text-bg-success' : 'text-bg-light'}">
+          ${status}
+        </span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
 
-      // tie check
-      const tie = computeCutoffTie(state.activeTeamNames, cutoff);
-      const tieInfo = $('tieInfo');
+  // tie check
+  const tie = computeCutoffTie(state.activeTeamNames, cutoff);
+  const tieInfo = $('tieInfo');
 
-            if(tie.hasTie){
-        // ✅ cutoff puanını ve güvenli takımları hesapla
-        const cutoffScore = sorted[cutoff-1].score;
+  if(tie.hasTie){
+    const cutoffScore = sorted[cutoff-1].score;
 
-        state.tieBreak = true;
-        state.tieCandidates = tie.tiedNames.slice();
+    state.tieBreak = true;
+    state.tieCandidates = tie.tiedNames.slice();
 
-        state.tieBreakQuestionsAsked = 0; // ✅ sıfırla
-        state.tieSafeNames = sorted
-          .filter(t => t.score > cutoffScore)   // ✅ baraj puanının ÜSTÜNDE kalanlar
-          .map(t => t.name);
+    state.tieBreakQuestionsAsked = 0;
+    state.tieSafeNames = sorted
+      .filter(t => t.score > cutoffScore)
+      .map(t => t.name);
 
-        // ✅ scoreboard'a girme, direkt tie-break'e dön
-        stopStandby();
-        showScreen('screenQuestion');
-        nextQuestion();
-        return;
-      }
+    stopStandby();
+    showScreen('screenQuestion');
+    nextQuestion();
+    return;
+  }
 
-    function proceedFromScoreboard(){
-      stopStandby();
-      const sorted = sortTeamsByScore(state.activeTeamNames);
+  // Eğer tie yoksa normalde DEVAM butonu görünür olmalı
+  $('btnProceedNextStage').classList.toggle('d-none', state.stageIndex === 3);
+  $('tieInfo').classList.add('d-none');
+} // ✅ showScoreboardForStage BURADA BİTER
 
-      if(state.stageIndex === 1){
-        const nextNames = sorted.slice(0, STAGES[1].cutoff).map(t=>t.name);
-        startStage(2, nextNames);
-      }else if(state.stageIndex === 2){
-        const nextNames = sorted.slice(0, STAGES[2].cutoff).map(t=>t.name);
-        startStage(3, nextNames);
-      }else{
-        alert(`Şampiyon: ${sorted[0]?.name || '-'}`);
-      }
-    }
 
-    function resetAll(){
-      stopTimer();
-      state.teams = [];
-      state.activeTeamNames = [];
-      state.stageIndex = 0;
-      state.stageName = '';
-      state.stagePlan = null;
-      state.stageTotalQuestions = 0;
-      state.stageAskedCount = 0;
-      state.tieBreak = false;
-      state.tieCandidates = [];
-      state.currentQuestion = null;
-      state.usedQuestionIds = new Set();
+// ✅ BUNLAR DIŞARIDA OLMALI (GLOBAL SCOPE)
+function proceedFromScoreboard(){
+  stopStandby();
+  const sorted = sortTeamsByScore(state.activeTeamNames);
 
-      $('stagePill').classList.add('d-none');
-      $('subStagePill').classList.add('d-none');
-      $('teamTextarea').value = '';
-      $('btnBeginStage1').disabled = true;
+  if(state.stageIndex === 1){
+    const nextNames = sorted.slice(0, STAGES[1].cutoff).map(t=>t.name);
+    startStage(2, nextNames);
+  }else if(state.stageIndex === 2){
+    const nextNames = sorted.slice(0, STAGES[2].cutoff).map(t=>t.name);
+    startStage(3, nextNames);
+  }else{
+    alert(`Şampiyon: ${sorted[0]?.name || '-'}`);
+  }
+}
 
-      QUESTION_BANK = generatePlaceholderQuestions();
-      showScreen('screenWelcome');
-    }
+function resetAll(){
+  stopTimer();
+  state.teams = [];
+  state.activeTeamNames = [];
+  state.stageIndex = 0;
+  state.stageName = '';
+  state.stagePlan = null;
+  state.stageTotalQuestions = 0;
+  state.stageAskedCount = 0;
+  state.tieBreak = false;
+  state.tieCandidates = [];
+  state.currentQuestion = null;
+  state.usedQuestionIds = new Set();
 
+  $('stagePill').classList.add('d-none');
+  $('subStagePill').classList.add('d-none');
+  $('teamTextarea').value = '';
+  $('btnBeginStage1').disabled = true;
+
+  // ⚠️ burası istersen: QUESTION_BANK'i placeholder'a çevirmek yerine aynı kalsın
+  // QUESTION_BANK = generatePlaceholderQuestions();
+
+  showScreen('screenWelcome');
+}
     /***********************
      *  EVENTS
      ***********************/
