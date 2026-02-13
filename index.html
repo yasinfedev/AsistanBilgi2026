@@ -327,7 +327,7 @@ Ankara Resüs
               PUAN GİR
             </button>
             <button id="btnNextQuestion" class="btn btn-dark btn-xl d-none">SONRAKİ SORU</button>
-            <button id="btnAbort" class="btn btn-outline-danger btn-xl ms-auto">Yarışmayı Sıfırla</button>
+            <button id="btnStartTimer" class="btn btn-warning btn-xl ms-auto">SÜREYİ BAŞLAT</button>
           </div>
 
           <div class="footer-note mt-3">
@@ -1013,6 +1013,43 @@ Ankara Resüs
       { name: 'FİNAL',  cutoff: 1, plan: ['YESIL','SARI','SARI','KIRMIZI','BONUS'] },
     ];
 
+// ✅ Sesler
+const SND = {
+  countdown: new Audio('https://acil42.com/wp-content/uploads/2026/02/30secCountdownSound.mp3'),
+  gong:      new Audio('https://acil42.com/wp-content/uploads/2026/02/BellGongSoundEffect.mp3'),
+  standby:   new Audio('https://acil42.com/wp-content/uploads/2026/02/StandBySound.mp3'),
+};
+
+SND.countdown.preload = 'auto';
+SND.gong.preload = 'auto';
+SND.standby.preload = 'auto';
+SND.standby.loop = true;
+
+function playOneShot(a){
+  try{
+    a.pause();
+    a.currentTime = 0;
+    a.play();
+  }catch(e){}
+}
+
+function startStandby(){
+  try{
+    SND.standby.currentTime = 0;
+    SND.standby.play();
+  }catch(e){}
+}
+
+function stopStandby(){
+  try{
+    SND.standby.pause();
+    SND.standby.currentTime = 0;
+  }catch(e){}
+}
+
+
+    
+
     /***********************
      *  HELPERS
      ***********************/
@@ -1169,10 +1206,21 @@ $('optD').innerHTML = `<span class="opt-letter">D</span><span>${escapeHtml(q.opt
       }
 
       disableOptions(true);
-      resetQuestionButtons();
-      startTimer();
-      updateLiveScoreboard();
-      formatStagePills();
+resetQuestionButtons();
+
+// ✅ Timer otomatik başlamasın
+stopTimer();
+$('timerBig').textContent = state.timer.seconds;
+$('timerBar').style.width = '100%';
+
+// ✅ Butonlar
+$('btnStartTimer').classList.remove('d-none');     // süreyi başlat görünsün
+$('btnShowAnswer').classList.add('d-none');
+$('btnEnterPoints').classList.add('d-none');
+$('btnNextQuestion').classList.add('d-none');
+
+updateLiveScoreboard();
+formatStagePills();
     }
 
     function highlightAnswer(){
@@ -1282,6 +1330,13 @@ function cssSafe(s){
       if(!state.tieBreak){
         state.stageAskedCount += 1;
       }
+
+      function resetQuestionButtons(){
+  $('btnShowAnswer').classList.add('d-none');
+  $('btnEnterPoints').classList.add('d-none');
+  $('btnNextQuestion').classList.add('d-none');
+  $('btnStartTimer')?.classList.remove('d-none'); // ✅
+}
     }
 
     function computeCutoffTie(names, cutoff){
@@ -1300,6 +1355,7 @@ function cssSafe(s){
     }
 
     function showScoreboardForStage(){
+      startStandby();
       showScreen('screenScoreboard');
 
       const sorted = sortTeamsByScore(state.activeTeamNames);
@@ -1369,6 +1425,7 @@ function cssSafe(s){
     }
 
     function proceedFromScoreboard(){
+      stopStandby();
       const sorted = sortTeamsByScore(state.activeTeamNames);
 
       if(state.stageIndex === 1){
@@ -1409,6 +1466,20 @@ function cssSafe(s){
      *  EVENTS
      ***********************/
     $('btnStart').addEventListener('click', ()=> showScreen('screenTeams'));
+
+    $('btnStartTimer').addEventListener('click', ()=>{
+  // tekrar basmayı engelle
+  $('btnStartTimer').classList.add('d-none');
+
+  // gong sesi
+  playOneShot(SND.gong);
+
+  // 30 sn countdown sesi
+  playOneShot(SND.countdown);
+
+  // timer başlat
+  startTimer();
+});
 
     $('btnDemoFill').addEventListener('click', ()=>{
       $('teamTextarea').value = [
@@ -1455,12 +1526,23 @@ function cssSafe(s){
       startStage(1, participantNames);
     });
 
-    $('btnShowAnswer').addEventListener('click', highlightAnswer);
+    $('btnShowAnswer').addEventListener('click', ()=>{
+  playOneShot(SND.gong);
+  highlightAnswer();
+});
 
-    $('btnEnterPoints').addEventListener('click', buildPointsModal);
+    $('btnEnterPoints').addEventListener('click', ()=>{
+  buildPointsModal();
+  startStandby();
+});
 
     $('btnSavePoints').addEventListener('click', ()=>{
       savePointsFromModal();
+
+      const pointsModalEl = document.getElementById('pointsModal');
+pointsModalEl.addEventListener('hidden.bs.modal', ()=>{
+  stopStandby();
+});
 
       if(state.tieBreak){
         const candSorted = sortTeamsByScore(state.tieCandidates);
@@ -1490,15 +1572,12 @@ function cssSafe(s){
     $('btnProceedNextStage').addEventListener('click', proceedFromScoreboard);
 
     $('btnBackToTeams').addEventListener('click', ()=>{
+      stopStandby();
       resetAll();
       showScreen('screenTeams');
     });
 
-    $('btnAbort').addEventListener('click', ()=>{
-      if(confirm('Yarışmayı sıfırlamak istiyor musunuz? Tüm puanlar ve sorular sıfırlanır.')){
-        resetAll();
-      }
-    });
+    
 
     document.addEventListener('visibilitychange', ()=>{
       if(document.hidden) stopTimer();
