@@ -124,6 +124,32 @@
         align-items:stretch;
       }
     }
+
+/* ✅ Kongre sahne modu: kategoriye göre arka plan tonu */
+.arena{
+  transition: background-color .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.bg-yesil{
+  background: linear-gradient(180deg, rgba(25,135,84,.10), rgba(255,255,255,1));
+  border-color: rgba(25,135,84,.20) !important;
+  box-shadow: 0 12px 30px rgba(25,135,84,.10);
+}
+.bg-sari{
+  background: linear-gradient(180deg, rgba(255,193,7,.14), rgba(255,255,255,1));
+  border-color: rgba(255,193,7,.25) !important;
+  box-shadow: 0 12px 30px rgba(255,193,7,.12);
+}
+.bg-kirmizi{
+  background: linear-gradient(180deg, rgba(220,53,69,.10), rgba(255,255,255,1));
+  border-color: rgba(220,53,69,.22) !important;
+  box-shadow: 0 12px 30px rgba(220,53,69,.10);
+}
+.bg-bonus{
+  background: linear-gradient(180deg, rgba(13,110,253,.10), rgba(255,255,255,1));
+  border-color: rgba(13,110,253,.22) !important;
+  box-shadow: 0 12px 30px rgba(13,110,253,.10);
+}
+    
   </style>
 </head>
 
@@ -223,7 +249,7 @@ Ankara Resüs
     <section id="screenQuestion" class="screen">
       <div class="two-col">
 
-        <div class="cardx question-wrap">
+        <div class="cardx question-wrap arena" id="arenaCard">
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
             <div class="d-flex flex-wrap gap-2 align-items-center">
               <span id="chipCategory" class="badge fs-6 px-3 py-2">
@@ -1005,6 +1031,19 @@ Ankara Resüs
       });
     }
 
+function setArenaTheme(catKey){
+  const arena = document.getElementById('arenaCard');
+  if(!arena) return;
+
+  arena.classList.remove('bg-yesil','bg-sari','bg-kirmizi','bg-bonus');
+
+  if(catKey === 'YESIL') arena.classList.add('bg-yesil');
+  if(catKey === 'SARI') arena.classList.add('bg-sari');
+  if(catKey === 'KIRMIZI') arena.classList.add('bg-kirmizi');
+  if(catKey === 'BONUS') arena.classList.add('bg-bonus');
+}
+
+    
     function escapeHtml(s){
       return (s||'').replace(/[&<>"']/g, m => ({
         '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
@@ -1081,6 +1120,7 @@ if(cat.key === 'YESIL') chip.classList.add('text-bg-success');
 if(cat.key === 'SARI') chip.classList.add('text-bg-warning');
 if(cat.key === 'KIRMIZI') chip.classList.add('text-bg-danger');
 if(cat.key === 'BONUS') chip.classList.add('text-bg-primary');
+      setArenaTheme(cat.key);
       $('txtPoints').textContent = cat.points;
       $('txtQCounter').textContent = questionIndexText;
 
