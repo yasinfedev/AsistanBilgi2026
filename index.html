@@ -1404,17 +1404,14 @@ function cssSafe(s){
       const tieInfo = $('tieInfo');
 
       if(tie.hasTie){
-        tieInfo.classList.remove('d-none');
-        $('btnProceedNextStage').classList.add('d-none');
+        // ✅ scoreboard'a girme, direkt tie-break'e dön
+  stopStandby(); // scoreboard standby'ı varsa kapat
+  state.tieBreak = true;
+  state.tieCandidates = tie.tiedNames.slice();
 
-        state.tieBreak = true;
-        state.tieCandidates = tie.tiedNames.slice();
-
-        // kısa bekleme sonra tie-break sorusuna dön
-        setTimeout(()=>{
-          showScreen('screenQuestion');
-          nextQuestion();
-        }, 700);
+  showScreen('screenQuestion');
+  nextQuestion();
+  return;
       }else{
         tieInfo.classList.add('d-none');
         $('btnProceedNextStage').classList.remove('d-none');
@@ -1468,16 +1465,12 @@ function cssSafe(s){
     $('btnStart').addEventListener('click', ()=> showScreen('screenTeams'));
 
     $('btnStartTimer').addEventListener('click', ()=>{
-  // tekrar basmayı engelle
   $('btnStartTimer').classList.add('d-none');
 
-  // gong sesi
+  stopStandby();                 // ✅ standby kapansın
+  playOneShot(SND.countdown);    // (playOneShot zaten resetliyor)
   playOneShot(SND.gong);
 
-  // 30 sn countdown sesi
-  playOneShot(SND.countdown);
-
-  // timer başlat
   startTimer();
 });
 
@@ -1536,13 +1529,15 @@ function cssSafe(s){
   startStandby();
 });
 
-    $('btnSavePoints').addEventListener('click', ()=>{
-      savePointsFromModal();
-
-      const pointsModalEl = document.getElementById('pointsModal');
+    const pointsModalEl = document.getElementById('pointsModal');
 pointsModalEl.addEventListener('hidden.bs.modal', ()=>{
   stopStandby();
 });
+
+    $('btnSavePoints').addEventListener('click', ()=>{
+      savePointsFromModal();
+
+      
 
       if(state.tieBreak){
         const candSorted = sortTeamsByScore(state.tieCandidates);
