@@ -405,7 +405,7 @@ Ankara Resüs
         </div>
         <div class="modal-body">
           <div class="alert alert-secondary">
-            Bu soru maksimum <span class="fw-bold" id="modalMaxPoints">0</span> puan.
+            Bu soru doğru cevaplayanlara <span class="fw-bold" id="modalMaxPoints">0</span> puan yazar.
           </div>
 
           <div class="table-responsive">
@@ -1192,6 +1192,10 @@ $('optD').innerHTML = `<span class="opt-letter">D</span><span>${escapeHtml(q.opt
     }
 
     function buildPointsModal(){
+function cssSafe(s){
+  return (s || '').toLowerCase().replace(/[^a-z0-9]+/g,'-');
+}
+      
       const maxPts = CATEGORY[state.currentQuestion.categoryKey].points;
       $('modalMaxPoints').textContent = maxPts;
 
@@ -1204,33 +1208,39 @@ $('optD').innerHTML = `<span class="opt-letter">D</span><span>${escapeHtml(q.opt
         tr.innerHTML = `
           <td class="fw-bold">${escapeHtml(name)}</td>
           <td class="text-end">
-            <input type="number" class="form-control text-end fw-bold"
-                   min="0" max="${maxPts}" step="1"
-                   data-team="${escapeHtml(name)}"
-                   value="0" />
-          </td>
+  <div class="btn-group" role="group" aria-label="Doğru Yanlış">
+    <input type="radio" class="btn-check" name="ans-${cssSafe(name)}" id="w-${cssSafe(name)}" autocomplete="off" data-team="${escapeHtml(name)}" data-correct="0" checked>
+    <label class="btn btn-outline-danger fw-bold" for="w-${cssSafe(name)}">Yanlış</label>
+
+    <input type="radio" class="btn-check" name="ans-${cssSafe(name)}" id="c-${cssSafe(name)}" autocomplete="off" data-team="${escapeHtml(name)}" data-correct="1">
+    <label class="btn btn-outline-success fw-bold" for="c-${cssSafe(name)}">Doğru</label>
+  </div>
+</td>
         `;
         tbody.appendChild(tr);
       });
     }
 
     function savePointsFromModal(){
-      const maxPts = CATEGORY[state.currentQuestion.categoryKey].points;
-      const inputs = $('pointsEntryBody').querySelectorAll('input[data-team]');
-      inputs.forEach(inp=>{
-        const name = inp.getAttribute('data-team');
-        let val = parseInt(inp.value,10);
-        if(Number.isNaN(val)) val = 0;
-        val = Math.max(0, Math.min(maxPts, val));
-        const team = state.teams.find(t=>t.name===name);
-        if(team) team.score += val;
-      });
+  const pts = CATEGORY[state.currentQuestion.categoryKey].points;
 
-      updateLiveScoreboard();
+  // Her takım için seçili radio: data-correct="1" ise doğru
+  const radios = $('pointsEntryBody').querySelectorAll('input[type="radio"][data-team]:checked');
 
-      $('btnNextQuestion').classList.remove('d-none');
-      $('btnEnterPoints').classList.add('d-none');
+  radios.forEach(r => {
+    const name = r.getAttribute('data-team');
+    const isCorrect = r.getAttribute('data-correct') === "1";
+    if(isCorrect){
+      const team = state.teams.find(t=>t.name===name);
+      if(team) team.score += pts; // ✅ otomatik puan ekle
     }
+  });
+
+  updateLiveScoreboard();
+
+  $('btnNextQuestion').classList.remove('d-none');
+  $('btnEnterPoints').classList.add('d-none');
+}
 
     function startStage(stageIdx, participantNames){
       state.stageIndex = stageIdx;
