@@ -133,7 +133,7 @@
     <div class="container-fluid px-3 px-md-4 d-flex align-items-center justify-content-between">
       <div class="brand-badge">
         <span class="badge text-bg-dark rounded-pill">ATUDER</span>
-        <span>Acil Tıp Asistan Bilgi Yarışması 2026| © yamizey yazılım</span>
+        <span>Acil Tıp Asistan Bilgi Yarışması 2026 | © yamizey yazılım</span>
       </div>
       <div class="d-flex align-items-center gap-2">
         <span id="stagePill" class="stage-pill d-none">AŞAMA</span>
@@ -226,10 +226,9 @@ Ankara Resüs
         <div class="cardx question-wrap">
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
             <div class="d-flex flex-wrap gap-2 align-items-center">
-              <span id="chipCategory" class="meta-chip">
-                <span id="dotCategory" class="chip-dot"></span>
-                <span id="txtCategory">Kategori</span>
-              </span>
+              <span id="chipCategory" class="badge fs-6 px-3 py-2">
+  KATEGORİ
+</span>
               <span id="chipPoints" class="meta-chip">
                 <span class="badge text-bg-dark rounded-pill">PUAN</span>
                 <span id="txtPoints">0</span>
@@ -423,8 +422,515 @@ Ankara Resüs
         ...makeQ('BONUS', 10, 1),
       ];
     }
+/*SORULAR BURADA*/
+    
+    let QUESTION_BANK = [
+  // =========================
+  // ✅ YEŞİL (20 soru) — 10 puan
+  // =========================
+  {
+    id: "YESIL-001",
+    categoryKey: "YESIL",
+    question: "Anafilakside ilk basamak ilaç hangisidir?",
+    options: { A: "IV steroid", B: "IM adrenalin", C: "IV antihistaminik", D: "Nebül salbutamol" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-002",
+    categoryKey: "YESIL",
+    question: "Erişkin hipoglisemide acilde sık kullanılan IV dekstroz konsantrasyonu hangisidir?",
+    options: { A: "%5", B: "%10", C: "%20", D: "%50" },
+    answer: "D"
+  },
+  {
+    id: "YESIL-003",
+    categoryKey: "YESIL",
+    question: "Acil serviste triyajda 'Kırmızı' alan genel olarak neyi ifade eder?",
+    options: { A: "Acil olmayan", B: "Gecikebilir", C: "Hayatı tehdit eden", D: "Kontrol randevusu" },
+    answer: "C"
+  },
+  {
+    id: "YESIL-004",
+    categoryKey: "YESIL",
+    question: "Acil serviste el hijyeni için en temel yöntem hangisidir?",
+    options: { A: "Eldiven giymek", B: "Alkol bazlı el antiseptiği", C: "Sadece suyla yıkamak", D: "Maske takmak" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-005",
+    categoryKey: "YESIL",
+    question: "Oksijen satürasyonu (SpO2) ölçümü en sık hangi yöntemle yapılır?",
+    options: { A: "Kapnografi", B: "Pulse oksimetre", C: "Arteriyel kan gazı", D: "EKG" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-006",
+    categoryKey: "YESIL",
+    question: "GKS (Glasgow Koma Skoru) hangi üç bileşenden oluşur?",
+    options: { A: "Ateş–nabız–solunum", B: "Göz–motor–sözel", C: "Ağrı–refleks–pupil", D: "Bilinç–denge–konuşma" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-007",
+    categoryKey: "YESIL",
+    question: "Acilde şok değerlendirmesinde en temel vital bulgu hangisidir?",
+    options: { A: "Boy", B: "Ağırlık", C: "Kan basıncı", D: "Göz rengi" },
+    answer: "C"
+  },
+  {
+    id: "YESIL-008",
+    categoryKey: "YESIL",
+    question: "İntravenöz (IV) yol açmanın temel amacı hangisidir?",
+    options: { A: "Ağrı azaltmak", B: "İlaç/sıvı uygulamak", C: "Ateşi düşürmek", D: "Solunumu artırmak" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-009",
+    categoryKey: "YESIL",
+    question: "Akut ağrı kontrolünde ilk değerlendirmede en çok hangisi sorgulanır?",
+    options: { A: "Saç rengi", B: "Ağrının şiddeti", C: "Eğitim durumu", D: "Meslek" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-010",
+    categoryKey: "YESIL",
+    question: "Acilde travmada ilk yaklaşımın temel prensibi hangisidir?",
+    options: { A: "Detaylı öykü", B: "ABC yaklaşımı", C: "Sadece laboratuvar", D: "Sadece MR" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-011",
+    categoryKey: "YESIL",
+    question: "KPR’de göğüs kompresyonunun yeri neresidir?",
+    options: { A: "Sol meme ucu", B: "Sternumun alt yarısı", C: "Sağ kostalar", D: "Ksifoid" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-012",
+    categoryKey: "YESIL",
+    question: "Tansiyon pnömotoraks şüphesinde klinikte en öncelikli yaklaşım hangisidir?",
+    options: { A: "Akciğer grafisi beklemek", B: "BT çekmek", C: "Klinik tanı ile acil dekompresyon", D: "Antibiyotik başlamak" },
+    answer: "C"
+  },
+  {
+    id: "YESIL-013",
+    categoryKey: "YESIL",
+    question: "Acilde ateş ölçümü için en pratik yöntemlerden biri hangisidir?",
+    options: { A: "CT", B: "Timpan termometre", C: "EKG", D: "USG" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-014",
+    categoryKey: "YESIL",
+    question: "Ciddi alerjik reaksiyonda hastanın pozisyonu için genel öneri hangisidir?",
+    options: { A: "Ayakta bekletme", B: "Supin + bacakları yükseltme (uygunsa)", C: "Yüzüstü yatırma", D: "Sürekli yürütme" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-015",
+    categoryKey: "YESIL",
+    question: "SpO2 düşükse ilk yapılacaklardan biri hangisidir?",
+    options: { A: "Hemen taburcu", B: "Oksijen desteği başlamak", C: "Sadece kan şekeri bakmak", D: "Sadece idrar tahlili" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-016",
+    categoryKey: "YESIL",
+    question: "Acilde bilinç bozukluğunda hızlı değerlendirmede ilklerden biri hangisidir?",
+    options: { A: "HbA1c", B: "Kan şekeri ölçümü", C: "Kolesterol", D: "D vitamini" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-017",
+    categoryKey: "YESIL",
+    question: "Şiddetli ağrılı travmalı hastada analjezi yaklaşımı için doğru ifade hangisidir?",
+    options: { A: "Analjezi geciktirilmelidir", B: "Ağrı kontrolü erken planlanabilir", C: "Sadece sedasyon yapılır", D: "Ağrı değerlendirilmez" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-018",
+    categoryKey: "YESIL",
+    question: "IV sıvı tedavisinde ilk tercih kristalloidlerden hangisidir?",
+    options: { A: "Süt", B: "Serum fizyolojik / dengeli kristalloid", C: "Kahve", D: "Meyve suyu" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-019",
+    categoryKey: "YESIL",
+    question: "Acilde hastanın kimlik doğrulaması için temel yöntem hangisidir?",
+    options: { A: "Tahmin etmek", B: "Bileklik / kimlik kontrolü", C: "Yanındaki kişiye sormamak", D: "Sadece dosyaya bakmak" },
+    answer: "B"
+  },
+  {
+    id: "YESIL-020",
+    categoryKey: "YESIL",
+    question: "KPR sırasında ventilasyon için temel amaç hangisidir?",
+    options: { A: "Hipoksemi düzeltmek", B: "Hipertansiyon yapmak", C: "Ağrıyı azaltmak", D: "Ateşi düşürmek" },
+    answer: "A"
+  },
 
-    let QUESTION_BANK = generatePlaceholderQuestions();
+  // =========================
+  // ✅ SARI (20 soru) — 15 puan
+  // =========================
+  {
+    id: "SARI-001",
+    categoryKey: "SARI",
+    question: "Inferior ST elevasyonlu MI’da sağ ventrikül MI’ı düşündüren en önemli derivasyon hangisidir?",
+    options: { A: "V1", B: "V3", C: "V4R", D: "aVL" },
+    answer: "C"
+  },
+  {
+    id: "SARI-002",
+    categoryKey: "SARI",
+    question: "Sepsis-3’e göre sepsis tanımı hangisidir?",
+    options: { A: "Ateş + lökositoz", B: "Enfeksiyona yanıt olarak organ disfonksiyonu", C: "Hipotansiyon + taşikardi", D: "CRP yüksekliği" },
+    answer: "B"
+  },
+  {
+    id: "SARI-003",
+    categoryKey: "SARI",
+    question: "Pulmoner emboli olasılığı düşük hastada dışlama için kullanılan klinik araçlardan biri hangisidir?",
+    options: { A: "PERC", B: "APGAR", C: "MELD", D: "CHADS2" },
+    answer: "A"
+  },
+  {
+    id: "SARI-004",
+    categoryKey: "SARI",
+    question: "Akut inmede tromboliz için en kritik unsurlardan biri hangisidir?",
+    options: { A: "Hasta boyu", B: "Semptom başlangıç zamanı", C: "Saç rengi", D: "Kan grubu" },
+    answer: "B"
+  },
+  {
+    id: "SARI-005",
+    categoryKey: "SARI",
+    question: "Kafa travmasında BT endikasyonunda sık kullanılan karar kuralı hangisidir?",
+    options: { A: "Wells", B: "Canadian CT Head Rule", C: "PERC", D: "Ottawa Ankle" },
+    answer: "B"
+  },
+  {
+    id: "SARI-006",
+    categoryKey: "SARI",
+    question: "Akut astım atağında ilk basamak inhaler tedavilerden biri hangisidir?",
+    options: { A: "Nebül salbutamol", B: "Nebül lidokain", C: "IM penisilin", D: "IV heparin" },
+    answer: "A"
+  },
+  {
+    id: "SARI-007",
+    categoryKey: "SARI",
+    question: "Akut koroner sendromda ilk değerlendirmede mutlaka istenen tetkik hangisidir?",
+    options: { A: "EKG", B: "D vitamini", C: "Kemik dansitometre", D: "MR omuz" },
+    answer: "A"
+  },
+  {
+    id: "SARI-008",
+    categoryKey: "SARI",
+    question: "CO zehirlenmesinde pulse oksimetre ölçümü ile ilgili doğru ifade hangisidir?",
+    options: { A: "Her zaman düşük gösterir", B: "Normal/yanıltıcı olabilir", C: "COHb’yi doğrudan ölçer", D: "Tanı koydurucudur" },
+    answer: "B"
+  },
+  {
+    id: "SARI-009",
+    categoryKey: "SARI",
+    question: "Akut üst GIS kanamasında risk sınıflamasında kullanılan skorlardan biri hangisidir?",
+    options: { A: "Glasgow-Blatchford", B: "CHA2DS2-VASc", C: "SOFA", D: "APGAR" },
+    answer: "A"
+  },
+  {
+    id: "SARI-010",
+    categoryKey: "SARI",
+    question: "Akut pankreatitte ilk görüntülemede sıklıkla tercih edilen yöntem hangisidir?",
+    options: { A: "Direkt grafi", B: "USG", C: "Kemik sintigrafisi", D: "Anjiyografi (rutin)" },
+    answer: "B"
+  },
+  {
+    id: "SARI-011",
+    categoryKey: "SARI",
+    question: "Gebe hastada şok tablosunda ilk yaklaşım için doğru ifade hangisidir?",
+    options: { A: "Anne stabilitesi önceliklidir", B: "Sadece fetal değerlendirme", C: "IV yol açılmaz", D: "Oksijen verilmez" },
+    answer: "A"
+  },
+  {
+    id: "SARI-012",
+    categoryKey: "SARI",
+    question: "Akut apandisit şüphesinde ilk basamak görüntüleme seçeneği (özellikle genç/gebede) hangisidir?",
+    options: { A: "USG", B: "PET", C: "Direkt grafi", D: "EKO" },
+    answer: "A"
+  },
+  {
+    id: "SARI-013",
+    categoryKey: "SARI",
+    question: "Akut menenjit şüphesinde ampirik antibiyotik başlama zamanlaması için doğru yaklaşım hangisidir?",
+    options: { A: "BT’den sonra günlerce beklenir", B: "Geciktirilmeden başlanır", C: "Sadece kültür sonucu beklenir", D: "Hiç başlanmaz" },
+    answer: "B"
+  },
+  {
+    id: "SARI-014",
+    categoryKey: "SARI",
+    question: "Hiperkalemide EKG’de görülebilecek değişikliklerden biri hangisidir?",
+    options: { A: "U dalgası belirginleşir", B: "Sivri (tented) T dalgaları", C: "PR kısalır", D: "QT uzamaz" },
+    answer: "B"
+  },
+  {
+    id: "SARI-015",
+    categoryKey: "SARI",
+    question: "Hiponatremide hızlı düzeltmenin en önemli komplikasyonu hangisidir?",
+    options: { A: "Hepatit", B: "Osmotik demiyelinizasyon", C: "Pnömoni", D: "Böbrek taşı" },
+    answer: "B"
+  },
+  {
+    id: "SARI-016",
+    categoryKey: "SARI",
+    question: "Akut inmede ilk görüntüleme (tromboliz öncesi) genellikle hangisidir?",
+    options: { A: "Kontrastsız beyin BT", B: "Direkt karın grafisi", C: "Beyin MR (her zaman)", D: "USG karotis (ilk)" },
+    answer: "A"
+  },
+  {
+    id: "SARI-017",
+    categoryKey: "SARI",
+    question: "Anafilakside adrenalin uygulama yolu (ilk tercih) hangisidir?",
+    options: { A: "IV bolus", B: "IM", C: "SC", D: "Oral" },
+    answer: "B"
+  },
+  {
+    id: "SARI-018",
+    categoryKey: "SARI",
+    question: "Akut KOAH alevlenmesinde ilk basamak tedavilerden biri hangisidir?",
+    options: { A: "Nebül bronkodilatör", B: "Yalnızca antibiyotik", C: "Sadece diüretik", D: "Sadece sedasyon" },
+    answer: "A"
+  },
+  {
+    id: "SARI-019",
+    categoryKey: "SARI",
+    question: "DKA’da (diyabetik ketoasidoz) ilk yaklaşımın temel bileşeni hangisidir?",
+    options: { A: "Sıvı resüsitasyonu", B: "Sadece antibiyotik", C: "Sadece analjezi", D: "Sadece antiemetik" },
+    answer: "A"
+  },
+  {
+    id: "SARI-020",
+    categoryKey: "SARI",
+    question: "Akut epigastrik ağrıda aort diseksiyonu şüphesinde hızlı tarama için önemli fizik bulgu hangisidir?",
+    options: { A: "Kulak ağrısı", B: "Kollar arası tansiyon farkı", C: "Döküntü", D: "Dil pası" },
+    answer: "B"
+  },
+
+  // =========================
+  // ✅ KIRMIZI (20 soru) — 25 puan
+  // =========================
+  {
+    id: "KIRMIZI-001",
+    categoryKey: "KIRMIZI",
+    question: "Refrakter VF/pVT’de (ACLS) antiaritmik seçeneklerden biri hangisidir?",
+    options: { A: "Adenozin", B: "Amiodaron", C: "Verapamil", D: "Digoksin" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-002",
+    categoryKey: "KIRMIZI",
+    question: "Tansiyon pnömotoraksta en uygun acil yaklaşım hangisidir?",
+    options: { A: "Nazal O2", B: "Antibiyotik", C: "İğne dekompresyonu", D: "Yalnız gözlem" },
+    answer: "C"
+  },
+  {
+    id: "KIRMIZI-003",
+    categoryKey: "KIRMIZI",
+    question: "Anafilakside IV bolus adrenalin hangi durumda daha çok düşünülür?",
+    options: { A: "Hafif ürtiker", B: "Ağır şok/kalp durması", C: "Sadece rinit", D: "Sadece kaşıntı" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-004",
+    categoryKey: "KIRMIZI",
+    question: "KPR’de defibrilasyon endikasyonu olan ritimler hangileridir?",
+    options: { A: "Asistoli ve PEA", B: "Sinüs taşikardi", C: "VF ve pVT", D: "AF ve SVT" },
+    answer: "C"
+  },
+  {
+    id: "KIRMIZI-005",
+    categoryKey: "KIRMIZI",
+    question: "Status epileptikus tanımı için sık kullanılan süre eşiklerinden biri hangisidir?",
+    options: { A: "30 saniye", B: "1 dakika", C: "5 dakika", D: "60 dakika" },
+    answer: "C"
+  },
+  {
+    id: "KIRMIZI-006",
+    categoryKey: "KIRMIZI",
+    question: "Akut masif hemoptizide acil yaklaşımda en kritik hedeflerden biri hangisidir?",
+    options: { A: "Hasta aç bırakılır", B: "Hava yolunu korumak", C: "Sadece sedasyon", D: "Antihistaminik vermek" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-007",
+    categoryKey: "KIRMIZI",
+    question: "TRAVMA’da hava yolu kontrolü için en kritik endikasyonlardan biri hangisidir?",
+    options: { A: "Hafif baş ağrısı", B: "GKS ≤ 8", C: "İştahsızlık", D: "Bel ağrısı" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-008",
+    categoryKey: "KIRMIZI",
+    question: "Hiperkalemide membran stabilizasyonu için ilk verilen ilaç hangisidir?",
+    options: { A: "Kalsiyum glukonat", B: "Furosemid", C: "Heparin", D: "Metoprolol" },
+    answer: "A"
+  },
+  {
+    id: "KIRMIZI-009",
+    categoryKey: "KIRMIZI",
+    question: "Akut koroner sendromda hayatı tehdit eden mekanik komplikasyonlardan biri hangisidir?",
+    options: { A: "Kolelitiazis", B: "Papiller kas rüptürü", C: "Otit", D: "Sinüzit" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-010",
+    categoryKey: "KIRMIZI",
+    question: "Aort diseksiyonunda ilk hedeflerden biri hangisidir?",
+    options: { A: "Ağrıyı artırmak", B: "Nabız ve tansiyon kontrolü", C: "Bol sıvı yüklemek", D: "Sadece antibiyotik" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-011",
+    categoryKey: "KIRMIZI",
+    question: "Akut iskemik inmede trombektomi düşünülmesinde en kritik unsurlardan biri hangisidir?",
+    options: { A: "Saç tipi", B: "Büyük damar oklüzyonu varlığı", C: "Kan grubu", D: "Boy uzunluğu" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-012",
+    categoryKey: "KIRMIZI",
+    question: "Septik şokta ilk saat yaklaşımı için doğru seçenek hangisidir?",
+    options: { A: "Sadece analjezi", B: "Sıvı + erken antibiyotik", C: "Sadece antihistaminik", D: "Bekle-gör" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-013",
+    categoryKey: "KIRMIZI",
+    question: "PEA arrestte en önemli yaklaşım hangisidir?",
+    options: { A: "Defibrilasyon", B: "Kompresyon + geri döndürülebilir nedenleri araştırma", C: "Sadece atropin", D: "Sadece oksijen" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-014",
+    categoryKey: "KIRMIZI",
+    question: "Akut koroner sendromda ST elevasyonlu MI’da reperfüzyon için temel seçenek hangisidir?",
+    options: { A: "Sadece aspirin", B: "Primer PCI / fibrinoliz", C: "Sadece statin", D: "Sadece antibiyotik" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-015",
+    categoryKey: "KIRMIZI",
+    question: "Nörojenik şok ile ilgili doğru ifade hangisidir?",
+    options: { A: "Her zaman taşikardi", B: "Bradikardi + hipotansiyon görülebilir", C: "Sadece ateş yapar", D: "Hipertansiyon yapar" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-016",
+    categoryKey: "KIRMIZI",
+    question: "Akut adrenal kriz (Addison krizi) tedavisinde temel yaklaşım hangisidir?",
+    options: { A: "Sadece antibiyotik", B: "IV hidrokortizon + sıvı", C: "Sadece diüretik", D: "Sadece antihistaminik" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-017",
+    categoryKey: "KIRMIZI",
+    question: "Hipotermik hastada aritmi riskini artıran önemli faktörlerden biri hangisidir?",
+    options: { A: "Nazal O2", B: "Kaba manipülasyon", C: "Sıcak battaniye", D: "Yavaş ısıtma" },
+    answer: "B"
+  },
+  {
+    id: "KIRMIZI-018",
+    categoryKey: "KIRMIZI",
+    question: "Travmada masif kanama kontrolünde ilk basamaklardan biri hangisidir?",
+    options: { A: "Turnike/basınç", B: "Antihistaminik", C: "Antibiyotik tek başına", D: "Sadece tetkik beklemek" },
+    answer: "A"
+  },
+  {
+    id: "KIRMIZI-019",
+    categoryKey: "KIRMIZI",
+    question: "Akut kardiyojenik şokta sık kullanılan vazopressör/inotrop ajanlardan biri hangisidir?",
+    options: { A: "Norepinefrin", B: "Parasetamol", C: "Ibuprofen", D: "Loperamid" },
+    answer: "A"
+  },
+  {
+    id: "KIRMIZI-020",
+    categoryKey: "KIRMIZI",
+    question: "Yüksek riskli hava yolu ödeminde (ör. anafilaksi/anjiyoödem) en önemli öncelik hangisidir?",
+    options: { A: "Antiemetik vermek", B: "Hava yolunu güvenceye almak", C: "Diyet düzenlemek", D: "Sadece gözlem" },
+    answer: "B"
+  },
+
+  // =========================
+  // 🧩 BONUS (10 soru) — ŞABLON (sen dolduracaksın)
+  // =========================
+  {
+    id: "BONUS-001",
+    categoryKey: "BONUS",
+    question: "BONUS SORU 1 (burayı değiştir)",
+    options: { A: "A", B: "B", C: "C", D: "D" },
+    answer: "A"
+  },
+  {
+    id: "BONUS-002",
+    categoryKey: "BONUS",
+    question: "BONUS SORU 2 (burayı değiştir)",
+    options: { A: "A", B: "B", C: "C", D: "D" },
+    answer: "A"
+  },
+  {
+    id: "BONUS-003",
+    categoryKey: "BONUS",
+    question: "BONUS SORU 3 (burayı değiştir)",
+    options: { A: "A", B: "B", C: "C", D: "D" },
+    answer: "A"
+  },
+  {
+    id: "BONUS-004",
+    categoryKey: "BONUS",
+    question: "BONUS SORU 4 (burayı değiştir)",
+    options: { A: "A", B: "B", C: "C", D: "D" },
+    answer: "A"
+  },
+  {
+    id: "BONUS-005",
+    categoryKey: "BONUS",
+    question: "BONUS SORU 5 (burayı değiştir)",
+    options: { A: "A", B: "B", C: "C", D: "D" },
+    answer: "A"
+  },
+  {
+    id: "BONUS-006",
+    categoryKey: "BONUS",
+    question: "BONUS SORU 6 (burayı değiştir)",
+    options: { A: "A", B: "B", C: "C", D: "D" },
+    answer: "A"
+  },
+  {
+    id: "BONUS-007",
+    categoryKey: "BONUS",
+    question: "BONUS SORU 7 (burayı değiştir)",
+    options: { A: "A", B: "B", C: "C", D: "D" },
+    answer: "A"
+  },
+  {
+    id: "BONUS-008",
+    categoryKey: "BONUS",
+    question: "BONUS SORU 8 (burayı değiştir)",
+    options: { A: "A", B: "B", C: "C", D: "D" },
+    answer: "A"
+  },
+  {
+    id: "BONUS-009",
+    categoryKey: "BONUS",
+    question: "BONUS SORU 9 (burayı değiştir)",
+    options: { A: "A", B: "B", C: "C", D: "D" },
+    answer: "A"
+  },
+  {
+    id: "BONUS-010",
+    categoryKey: "BONUS",
+    question: "BONUS SORU 10 (burayı değiştir)",
+    options: { A: "A", B: "B", C: "C", D: "D" },
+    answer: "A"
+  }
+];
 
     /***********************
      *  APP STATE
@@ -557,9 +1063,24 @@ Ankara Resüs
     function renderQuestion(q, questionIndexText){
       state.currentQuestion = q;
 
-      const cat = CATEGORY[q.categoryKey];
-      $('txtCategory').textContent = cat.label;
-      $('dotCategory').style.background = cat.dot;
+const cat = CATEGORY[q.categoryKey];
+
+const chip = $('chipCategory');
+chip.textContent = cat.label;
+
+// önce eski renkleri temizle
+chip.classList.remove(
+  'text-bg-success',
+  'text-bg-warning',
+  'text-bg-danger',
+  'text-bg-primary'
+);
+
+// kategoriye göre renk ver
+if(cat.key === 'YESIL') chip.classList.add('text-bg-success');
+if(cat.key === 'SARI') chip.classList.add('text-bg-warning');
+if(cat.key === 'KIRMIZI') chip.classList.add('text-bg-danger');
+if(cat.key === 'BONUS') chip.classList.add('text-bg-primary');
       $('txtPoints').textContent = cat.points;
       $('txtQCounter').textContent = questionIndexText;
 
