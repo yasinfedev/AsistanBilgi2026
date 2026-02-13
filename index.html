@@ -1,0 +1,911 @@
+
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Acil Tıp Asistan Bilgi Yarışması</title>
+
+  <!-- Bootstrap 5 (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f4f6f8;
+      --card:#ffffff;
+      --muted:#6c757d;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --radius: 20px;
+    }
+    body{
+      background: radial-gradient(1200px 600px at 10% 10%, #ffffff 0%, var(--bg) 55%, #eef2f6 100%);
+      min-height:100vh;
+    }
+    .screen{ display:none; width:100%; }
+    .screen.active{ display:block; }
+
+    .topbar{
+      position:sticky; top:0; z-index:10;
+      background:rgba(244,246,248,.75);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid rgba(0,0,0,.06);
+    }
+    .brand-badge{
+      display:inline-flex; align-items:center; gap:.6rem;
+      background: var(--card);
+      padding:.6rem 1rem;
+      border-radius:999px;
+      box-shadow: var(--shadow);
+      border:1px solid rgba(0,0,0,.06);
+      font-weight:700;
+    }
+    .stage-pill{
+      font-weight:800;
+      border-radius:999px;
+      padding:.45rem .85rem;
+      border:1px solid rgba(0,0,0,.08);
+      background:#fff;
+    }
+
+    .cardx{
+      background:var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border:1px solid rgba(0,0,0,.06);
+    }
+    .hero{ padding: clamp(1rem, 3vw, 2.2rem); }
+    .title{
+      font-weight:900;
+      letter-spacing:-.02em;
+      line-height:1.05;
+      font-size: clamp(2rem, 4.5vw, 3.6rem);
+    }
+    .subtitle{ color:var(--muted); font-size: clamp(1rem, 1.6vw, 1.15rem); }
+    .btn-xl{
+      padding: .95rem 1.25rem;
+      border-radius: 14px;
+      font-weight: 800;
+      letter-spacing:.02em;
+    }
+
+    .question-wrap{ padding: clamp(1rem, 2.5vw, 2rem); }
+    .q-text{
+      font-size: clamp(1.2rem, 2.2vw, 2rem);
+      font-weight: 850;
+      letter-spacing: -.01em;
+    }
+    .option-btn{
+      text-align:left;
+      width:100%;
+      border-radius: 14px;
+      padding: 1rem 1rem;
+      font-weight: 750;
+      border:1px solid rgba(0,0,0,.08);
+      background:#fff;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .option-btn:hover{ transform: translateY(-1px); box-shadow: 0 10px 18px rgba(0,0,0,.06); }
+    .option-btn:disabled{ opacity:1; cursor:default; transform:none; box-shadow:none; }
+
+    .timer-badge{
+      font-variant-numeric: tabular-nums;
+      font-weight: 950;
+      font-size: clamp(2.2rem, 5vw, 4.2rem);
+      letter-spacing: -.04em;
+      line-height: 1;
+    }
+    .meta-chip{
+      border-radius: 999px;
+      padding: .45rem .75rem;
+      font-weight: 850;
+      border:1px solid rgba(0,0,0,.08);
+      background:#fff;
+      display:inline-flex; align-items:center; gap:.5rem;
+      white-space:nowrap;
+    }
+    .chip-dot{
+      width:10px; height:10px; border-radius:999px; display:inline-block;
+      box-shadow: 0 0 0 3px rgba(0,0,0,.04);
+    }
+
+    .table thead th{ font-weight:900; }
+    .rank-1{ background: rgba(25,135,84,.10) !important; }
+    .rank-2{ background: rgba(13,110,253,.08) !important; }
+    .rank-3{ background: rgba(255,193,7,.12) !important; }
+    .rank-4{ background: rgba(108,117,125,.10) !important; }
+
+    .footer-note{ color:var(--muted); font-size:.95rem; }
+
+    @media (min-width: 992px){
+      .two-col{
+        display:grid;
+        grid-template-columns: 1.2fr .8fr;
+        gap: 1.25rem;
+        align-items:stretch;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- TOPBAR -->
+  <div class="topbar py-3">
+    <div class="container-fluid px-3 px-md-4 d-flex align-items-center justify-content-between">
+      <div class="brand-badge">
+        <span class="badge text-bg-dark rounded-pill">ATUDER</span>
+        <span>Acil Tıp Asistan Bilgi Yarışması 2026| © yamizey yazılım</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span id="stagePill" class="stage-pill d-none">AŞAMA</span>
+        <span id="subStagePill" class="stage-pill d-none">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid px-3 px-md-4 py-4">
+    <!-- SCREEN: WELCOME -->
+    <section id="screenWelcome" class="screen active">
+      <div class="cardx hero">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-7">
+            <div class="title">Acil Tıp Asistan Bilgi Yarışması'na<br/>Hoş Geldiniz!</div>
+            <p class="subtitle mt-3 mb-0">
+              22st National Emergency Medicine Congress,<br> 13th Intercontinental Emergency Medicine Congress,<br> 13th International Critical Care and Emergency Medicine Congress
+            </p>
+          </div>
+          <div class="col-lg-5">
+            <div class="cardx p-4">
+              <div class="d-grid gap-2">
+                <button id="btnStart" class="btn btn-dark btn-xl">BAŞLA</button>
+                <button id="btnDemoFill" class="btn btn-outline-secondary btn-xl">
+                  Demo: Takımları Otomatik Doldur (8 takım)
+                </button>
+              </div>
+              <div class="footer-note mt-3">
+                Not: Soru bankası kod içindedir. Sorular kolayca eklenebilir.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: TEAMS -->
+    <section id="screenTeams" class="screen">
+      <div class="two-col">
+        <div class="cardx p-4">
+          <h2 class="fw-bold mb-2">Takımları Girin</h2>
+          <p class="text-secondary mb-4">Her satıra bir takım adı yazın. En az 4 takım önerilir.</p>
+
+          <div class="row g-3 align-items-end">
+            <div class="col-md-9">
+              <label class="form-label fw-bold">Takım Listesi</label>
+              <textarea id="teamTextarea" class="form-control" rows="10" placeholder="Örn:
+Konya City
+Ankara Resüs
+İzmir Şok
+..."></textarea>
+            </div>
+            <div class="col-md-3">
+              <div class="d-grid gap-2">
+                <button id="btnParseTeams" class="btn btn-primary btn-xl">Takımları Kaydet</button>
+                <button id="btnClearTeams" class="btn btn-outline-secondary btn-xl">Temizle</button>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4"/>
+
+          <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+            <div class="text-secondary">
+              <span class="fw-bold">1.AŞAMA:</span> 1 Yeşil + 2 Sarı + 1 Kırmızı + 1 Bonus (Toplam 5 soru)
+            </div>
+            <button id="btnBeginStage1" class="btn btn-dark btn-xl" disabled>1.AŞAMAYA BAŞLA</button>
+          </div>
+        </div>
+
+        <div class="cardx p-4">
+          <h4 class="fw-bold">Kurallar / Puanlama</h4>
+          <ul class="mb-0">
+            <li>Yeşil: <span class="fw-bold">10</span> puan</li>
+            <li>Sarı: <span class="fw-bold">15</span> puan</li>
+            <li>Kırmızı: <span class="fw-bold">25</span> puan</li>
+            <li>Bonus: <span class="fw-bold">20</span> puan</li>
+            <li>Her soru: <span class="fw-bold">30 sn</span></li>
+            <li>Sorular bankadan <span class="fw-bold">rastgele</span> gelir, çıkan bir daha gelmez.</li>
+            <li>Cutoff eşitliklerinde <span class="fw-bold">bonus tie-break</span> sorusu sorulur.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: QUESTION -->
+    <section id="screenQuestion" class="screen">
+      <div class="two-col">
+
+        <div class="cardx question-wrap">
+          <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              <span id="chipCategory" class="meta-chip">
+                <span id="dotCategory" class="chip-dot"></span>
+                <span id="txtCategory">Kategori</span>
+              </span>
+              <span id="chipPoints" class="meta-chip">
+                <span class="badge text-bg-dark rounded-pill">PUAN</span>
+                <span id="txtPoints">0</span>
+              </span>
+              <span id="chipQCounter" class="meta-chip">
+                <span class="badge text-bg-secondary rounded-pill">SORU</span>
+                <span id="txtQCounter">1/5</span>
+              </span>
+              <span id="chipMode" class="meta-chip d-none">
+                <span class="badge text-bg-warning rounded-pill">TIE-BREAK</span>
+                <span id="txtMode">BONUS</span>
+              </span>
+            </div>
+
+            <div class="text-end">
+              <div id="timerBig" class="timer-badge">30</div>
+              <div class="text-secondary fw-bold">saniye</div>
+            </div>
+          </div>
+
+          <div class="progress mt-3" style="height:10px;">
+            <div id="timerBar" class="progress-bar" role="progressbar" style="width:100%"></div>
+          </div>
+
+          <hr class="my-4"/>
+
+          <div id="questionText" class="q-text mb-3">Soru metni...</div>
+
+          <div class="d-grid gap-2">
+            <button class="option-btn" id="optA"></button>
+            <button class="option-btn" id="optB"></button>
+            <button class="option-btn" id="optC"></button>
+            <button class="option-btn" id="optD"></button>
+          </div>
+
+          <hr class="my-4"/>
+
+          <div class="d-flex flex-wrap gap-2">
+            <button id="btnShowAnswer" class="btn btn-success btn-xl d-none">CEVABI GÖSTER</button>
+            <button id="btnEnterPoints" class="btn btn-primary btn-xl d-none" data-bs-toggle="modal" data-bs-target="#pointsModal">
+              PUAN GİR
+            </button>
+            <button id="btnNextQuestion" class="btn btn-dark btn-xl d-none">SONRAKİ SORU</button>
+            <button id="btnAbort" class="btn btn-outline-danger btn-xl ms-auto">Yarışmayı Sıfırla</button>
+          </div>
+
+          <div class="footer-note mt-3">
+            Süre bitince “CEVABI GÖSTER” aktif olur. Ardından “PUAN GİR” ile takım skorları girilir.
+          </div>
+        </div>
+
+        <div class="cardx p-4">
+          <div class="d-flex align-items-center justify-content-between">
+            <h4 class="fw-bold mb-0">Anlık Puan Tablosu</h4>
+            <span class="badge text-bg-dark rounded-pill" id="activeTeamsBadge">0 takım</span>
+          </div>
+          <div class="table-responsive mt-3">
+            <table class="table table-hover align-middle">
+              <thead>
+                <tr>
+                  <th style="width:60px;">#</th>
+                  <th>Takım</th>
+                  <th class="text-end">Puan</th>
+                </tr>
+              </thead>
+              <tbody id="liveScoreBody"></tbody>
+            </table>
+          </div>
+          <div class="footer-note">Bu tablo, her “PUAN GİR” işleminden sonra güncellenir.</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SCREEN: SCOREBOARD -->
+    <section id="screenScoreboard" class="screen">
+      <div class="cardx p-4">
+        <div class="d-flex flex-wrap align-items-end justify-content-between gap-3">
+          <div>
+            <h2 id="scoreboardTitle" class="fw-bold mb-1">Puan Tablosu</h2>
+            <div id="scoreboardSubtitle" class="text-secondary">—</div>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <button id="btnProceedNextStage" class="btn btn-dark btn-xl d-none">DEVAM</button>
+            <button id="btnBackToTeams" class="btn btn-outline-secondary btn-xl">Başa Dön</button>
+          </div>
+        </div>
+
+        <hr class="my-3"/>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th style="width:70px;">Sıra</th>
+                <th>Takım</th>
+                <th class="text-end">Toplam Puan</th>
+                <th class="text-end">Durum</th>
+              </tr>
+            </thead>
+            <tbody id="finalScoreBody"></tbody>
+          </table>
+        </div>
+
+        <div id="tieInfo" class="alert alert-warning d-none mt-3 mb-0">
+          Cutoff eşitliği var. Bonus tie-break sorularına geçilecek.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL: POINTS ENTRY -->
+  <div class="modal fade" id="pointsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content" style="border-radius:18px;">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Puan Gir (Bu Soru)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-secondary">
+            Bu soru maksimum <span class="fw-bold" id="modalMaxPoints">0</span> puan.
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th>Takım</th>
+                  <th class="text-end" style="width:180px;">Bu Sorudan</th>
+                </tr>
+              </thead>
+              <tbody id="pointsEntryBody"></tbody>
+            </table>
+          </div>
+
+          <div class="footer-note">
+            Tie-break modunda sadece eşitliği bozmaya aday takımlar listelenir.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary btn-xl" data-bs-dismiss="modal">İptal</button>
+          <button type="button" id="btnSavePoints" class="btn btn-primary btn-xl" data-bs-dismiss="modal">Kaydet</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    /***********************
+     *  CONFIG & QUESTION DB
+     ***********************/
+    const CATEGORY = {
+      YESIL: { key:'YESIL', label:'YEŞİL', points:10, dot:'#198754' },
+      SARI:  { key:'SARI',  label:'SARI',  points:15, dot:'#ffc107' },
+      KIRMIZI:{key:'KIRMIZI',label:'KIRMIZI',points:25, dot:'#dc3545' },
+      BONUS: { key:'BONUS', label:'BONUS', points:20, dot:'#0d6efd' }
+    };
+
+    // Soru formatı:
+    // { id, categoryKey, question, options:{A,B,C,D}, answer:'A'|'B'|'C'|'D' }
+    // Buraya kendi gerçek sorularınızı aynı formatta ekleyebilirsiniz.
+    function generatePlaceholderQuestions(){
+      const makeQ = (catKey, n, startIdx=1) => {
+        const out = [];
+        for(let i=0;i<n;i++){
+          const idx = startIdx+i;
+          const id = `${catKey}-${idx}`;
+          out.push({
+            id,
+            categoryKey: catKey,
+            question: `[${CATEGORY[catKey].label}] Örnek Soru ${idx}: Acil tıp bilgisi ile ilgili doğru ifade hangisidir?`,
+            options: {
+              A: `Seçenek A (${CATEGORY[catKey].label} ${idx})`,
+              B: `Seçenek B (${CATEGORY[catKey].label} ${idx})`,
+              C: `Seçenek C (${CATEGORY[catKey].label} ${idx})`,
+              D: `Seçenek D (${CATEGORY[catKey].label} ${idx})`,
+            },
+            answer: ['A','B','C','D'][Math.floor(Math.random()*4)]
+          });
+        }
+        return out;
+      };
+      return [
+        ...makeQ('YESIL', 20, 1),
+        ...makeQ('SARI', 20, 1),
+        ...makeQ('KIRMIZI', 20, 1),
+        ...makeQ('BONUS', 10, 1),
+      ];
+    }
+
+    let QUESTION_BANK = generatePlaceholderQuestions();
+
+    /***********************
+     *  APP STATE
+     ***********************/
+    const state = {
+      teams: [],               // {name, score}
+      activeTeamNames: [],     // current stage participants (subset)
+      stageIndex: 0,           // 1,2,3
+      stageName: '',
+      stagePlan: null,         // list of categories to ask
+      stageTotalQuestions: 0,
+      stageAskedCount: 0,      // non-tiebreak asked count
+      tieBreak: false,
+      tieCandidates: [],       // team names in tie-break
+      currentQuestion: null,
+      timer: { seconds:30, remaining:30, interval:null },
+      usedQuestionIds: new Set(),
+      cutoff: null,            // 4 for stage1, 3 for stage2, 1 for final winner
+    };
+
+    const STAGES = [
+      null,
+      { name: '1.AŞAMA', cutoff: 4, plan: ['YESIL','SARI','SARI','KIRMIZI','BONUS'] },
+      { name: '2.AŞAMA', cutoff: 3, plan: ['YESIL','SARI','SARI','KIRMIZI','BONUS'] },
+      { name: 'FİNAL',  cutoff: 1, plan: ['YESIL','SARI','SARI','KIRMIZI','BONUS'] },
+    ];
+
+    /***********************
+     *  HELPERS
+     ***********************/
+    const $ = (id) => document.getElementById(id);
+
+    function showScreen(screenId){
+      for(const el of document.querySelectorAll('.screen')) el.classList.remove('active');
+      $(screenId).classList.add('active');
+    }
+
+    function getTeamsByNames(names){
+      return state.teams.filter(t => names.includes(t.name));
+    }
+
+    function sortTeamsByScore(names){
+      return getTeamsByNames(names)
+        .slice()
+        .sort((a,b)=> b.score - a.score || a.name.localeCompare(b.name,'tr'));
+    }
+
+    function formatStagePills(){
+      $('stagePill').classList.remove('d-none');
+      $('subStagePill').classList.remove('d-none');
+      $('stagePill').textContent = state.stageName;
+      $('subStagePill').textContent = state.tieBreak ? 'Tie-break (Bonus)' : 'Normal';
+    }
+
+    function updateLiveScoreboard(){
+      const sorted = sortTeamsByScore(state.activeTeamNames);
+      $('activeTeamsBadge').textContent = `${sorted.length} takım`;
+      const tbody = $('liveScoreBody');
+      tbody.innerHTML = '';
+      sorted.forEach((t, idx)=>{
+        const tr = document.createElement('tr');
+        if(idx===0) tr.classList.add('rank-1');
+        if(idx===1) tr.classList.add('rank-2');
+        if(idx===2) tr.classList.add('rank-3');
+        if(idx===3) tr.classList.add('rank-4');
+        tr.innerHTML = `
+          <td class="fw-bold">${idx+1}</td>
+          <td class="fw-bold">${escapeHtml(t.name)}</td>
+          <td class="text-end fw-bold fs-5">${t.score}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function escapeHtml(s){
+      return (s||'').replace(/[&<>"']/g, m => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+      }[m]));
+    }
+
+    function pickRandomQuestion(categoryKey){
+      const candidates = QUESTION_BANK.filter(q => q.categoryKey===categoryKey && !state.usedQuestionIds.has(q.id));
+      if(candidates.length === 0) return null;
+      const q = candidates[Math.floor(Math.random()*candidates.length)];
+      state.usedQuestionIds.add(q.id);
+      return q;
+    }
+
+    function startTimer(){
+      stopTimer();
+      state.timer.remaining = state.timer.seconds;
+      $('timerBig').textContent = state.timer.remaining;
+      $('timerBar').style.width = '100%';
+
+      state.timer.interval = setInterval(()=>{
+        state.timer.remaining -= 1;
+        const pct = Math.max(0, (state.timer.remaining / state.timer.seconds) * 100);
+        $('timerBig').textContent = state.timer.remaining;
+        $('timerBar').style.width = pct + '%';
+
+        if(state.timer.remaining <= 0){
+          stopTimer();
+          onTimeUp();
+        }
+      }, 1000);
+    }
+
+    function stopTimer(){
+      if(state.timer.interval){
+        clearInterval(state.timer.interval);
+        state.timer.interval = null;
+      }
+    }
+
+    function onTimeUp(){
+      $('btnShowAnswer').classList.remove('d-none');
+      disableOptions(true);
+    }
+
+    function disableOptions(disabled){
+      ['optA','optB','optC','optD'].forEach(id => $(id).disabled = disabled);
+    }
+
+    function resetQuestionButtons(){
+      $('btnShowAnswer').classList.add('d-none');
+      $('btnEnterPoints').classList.add('d-none');
+      $('btnNextQuestion').classList.add('d-none');
+    }
+
+    function renderQuestion(q, questionIndexText){
+      state.currentQuestion = q;
+
+      const cat = CATEGORY[q.categoryKey];
+      $('txtCategory').textContent = cat.label;
+      $('dotCategory').style.background = cat.dot;
+      $('txtPoints').textContent = cat.points;
+      $('txtQCounter').textContent = questionIndexText;
+
+      $('chipMode').classList.toggle('d-none', !state.tieBreak);
+
+      $('questionText').textContent = q.question;
+      $('optA').textContent = 'A) ' + q.options.A;
+      $('optB').textContent = 'B) ' + q.options.B;
+      $('optC').textContent = 'C) ' + q.options.C;
+      $('optD').textContent = 'D) ' + q.options.D;
+
+      // reset option styles
+      for(const id of ['optA','optB','optC','optD']){
+        const btn = $(id);
+        btn.style.background = '#fff';
+        btn.style.borderColor = 'rgba(0,0,0,.08)';
+      }
+
+      disableOptions(true);
+      resetQuestionButtons();
+      startTimer();
+      updateLiveScoreboard();
+      formatStagePills();
+    }
+
+    function highlightAnswer(){
+      const ans = state.currentQuestion.answer;
+      const map = {A:'optA',B:'optB',C:'optC',D:'optD'};
+      const correctId = map[ans];
+
+      for(const id of ['optA','optB','optC','optD']){
+        $(id).style.background = '#fff';
+      }
+      const correctBtn = $(correctId);
+      correctBtn.style.background = 'rgba(25,135,84,.15)';
+      correctBtn.style.borderColor = 'rgba(25,135,84,.6)';
+
+      $('btnEnterPoints').classList.remove('d-none');
+      $('btnShowAnswer').classList.add('d-none');
+    }
+
+    function buildPointsModal(){
+      const maxPts = CATEGORY[state.currentQuestion.categoryKey].points;
+      $('modalMaxPoints').textContent = maxPts;
+
+      const targetNames = state.tieBreak ? state.tieCandidates : state.activeTeamNames;
+      const tbody = $('pointsEntryBody');
+      tbody.innerHTML = '';
+
+      targetNames.forEach(name=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="fw-bold">${escapeHtml(name)}</td>
+          <td class="text-end">
+            <input type="number" class="form-control text-end fw-bold"
+                   min="0" max="${maxPts}" step="1"
+                   data-team="${escapeHtml(name)}"
+                   value="0" />
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function savePointsFromModal(){
+      const maxPts = CATEGORY[state.currentQuestion.categoryKey].points;
+      const inputs = $('pointsEntryBody').querySelectorAll('input[data-team]');
+      inputs.forEach(inp=>{
+        const name = inp.getAttribute('data-team');
+        let val = parseInt(inp.value,10);
+        if(Number.isNaN(val)) val = 0;
+        val = Math.max(0, Math.min(maxPts, val));
+        const team = state.teams.find(t=>t.name===name);
+        if(team) team.score += val;
+      });
+
+      updateLiveScoreboard();
+
+      $('btnNextQuestion').classList.remove('d-none');
+      $('btnEnterPoints').classList.add('d-none');
+    }
+
+    function startStage(stageIdx, participantNames){
+      state.stageIndex = stageIdx;
+      state.stageName = STAGES[stageIdx].name;
+      state.cutoff = STAGES[stageIdx].cutoff;
+      state.stagePlan = STAGES[stageIdx].plan.slice();
+      state.stageTotalQuestions = state.stagePlan.length;
+      state.stageAskedCount = 0;
+      state.tieBreak = false;
+      state.tieCandidates = [];
+      state.activeTeamNames = participantNames.slice();
+
+      showScreen('screenQuestion');
+      nextQuestion();
+    }
+
+    function nextQuestion(){
+      resetQuestionButtons();
+
+      let catKey;
+      let qCounterText;
+
+      if(state.tieBreak){
+        catKey = 'BONUS';
+        qCounterText = `Tie-break`;
+      }else{
+        catKey = state.stagePlan[state.stageAskedCount];
+        qCounterText = `${state.stageAskedCount + 1}/${state.stageTotalQuestions}`;
+      }
+
+      const q = pickRandomQuestion(catKey);
+      if(!q){
+        alert('Bu kategoride kullanılabilir soru kalmadı. (Soru bankasını genişletin)');
+        return;
+      }
+
+      renderQuestion(q, qCounterText);
+
+      if(!state.tieBreak){
+        state.stageAskedCount += 1;
+      }
+    }
+
+    function computeCutoffTie(names, cutoff){
+      const sorted = sortTeamsByScore(names);
+      if(sorted.length <= cutoff) return { hasTie:false, tiedNames:[] };
+
+      const cutoffScore = sorted[cutoff-1].score;
+
+      const tiedGroup = sorted.filter(t => t.score === cutoffScore).map(t=>t.name);
+      const positions = tiedGroup.map(n => sorted.findIndex(t=>t.name===n));
+      const minPos = Math.min(...positions);
+      const maxPos = Math.max(...positions);
+
+      const tieAffectsCutoff = (minPos <= cutoff-1) && (maxPos >= cutoff);
+      return { hasTie: tieAffectsCutoff, tiedNames: tieAffectsCutoff ? tiedGroup : [] };
+    }
+
+    function showScoreboardForStage(){
+      showScreen('screenScoreboard');
+
+      const sorted = sortTeamsByScore(state.activeTeamNames);
+      const cutoff = state.cutoff;
+
+      $('scoreboardTitle').textContent = `${state.stageName} Puan Tablosu`;
+      if(state.stageIndex === 1){
+        $('scoreboardSubtitle').textContent = `İlk ${cutoff} takım 2.AŞAMAYA çıkar. Cutoff eşitliği varsa bonus tie-break yapılır.`;
+      }else if(state.stageIndex === 2){
+        $('scoreboardSubtitle').textContent = `İlk ${cutoff} takım FİNALE çıkar. Cutoff eşitliği varsa bonus tie-break yapılır.`;
+      }else{
+        $('scoreboardSubtitle').textContent = `Final sonuçları. Eşitlik varsa bonus tie-break ile şampiyon belirlenir.`;
+      }
+
+      const tbody = $('finalScoreBody');
+      tbody.innerHTML = '';
+
+      sorted.forEach((t, idx)=>{
+        const isQualified = idx < cutoff;
+        let status = isQualified ? 'Üst Tura' : 'Elendi';
+        if(state.stageIndex === 3) status = (idx===0 ? 'ŞAMPİYON' : '—');
+
+        const tr = document.createElement('tr');
+        if(idx===0) tr.classList.add('rank-1');
+        if(idx===1) tr.classList.add('rank-2');
+        if(idx===2) tr.classList.add('rank-3');
+        if(idx===3) tr.classList.add('rank-4');
+
+        tr.innerHTML = `
+          <td class="fw-bold">${idx+1}</td>
+          <td class="fw-bold">${escapeHtml(t.name)}</td>
+          <td class="text-end fw-bold fs-5">${t.score}</td>
+          <td class="text-end">
+            <span class="badge ${status==='Üst Tura' ? 'text-bg-success' :
+                                status==='Elendi' ? 'text-bg-secondary' :
+                                status==='ŞAMPİYON' ? 'text-bg-success' : 'text-bg-light'}">
+              ${status}
+            </span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // tie check
+      const tie = computeCutoffTie(state.activeTeamNames, cutoff);
+      const tieInfo = $('tieInfo');
+
+      if(tie.hasTie){
+        tieInfo.classList.remove('d-none');
+        $('btnProceedNextStage').classList.add('d-none');
+
+        state.tieBreak = true;
+        state.tieCandidates = tie.tiedNames.slice();
+
+        // kısa bekleme sonra tie-break sorusuna dön
+        setTimeout(()=>{
+          showScreen('screenQuestion');
+          nextQuestion();
+        }, 700);
+      }else{
+        tieInfo.classList.add('d-none');
+        $('btnProceedNextStage').classList.remove('d-none');
+        if(state.stageIndex === 1) $('btnProceedNextStage').textContent = '2.AŞAMAYA GEÇ';
+        else if(state.stageIndex === 2) $('btnProceedNextStage').textContent = 'FİNALE GEÇ';
+        else $('btnProceedNextStage').textContent = 'ŞAMPİYONU GÖSTER';
+      }
+    }
+
+    function proceedFromScoreboard(){
+      const sorted = sortTeamsByScore(state.activeTeamNames);
+
+      if(state.stageIndex === 1){
+        const nextNames = sorted.slice(0, STAGES[1].cutoff).map(t=>t.name);
+        startStage(2, nextNames);
+      }else if(state.stageIndex === 2){
+        const nextNames = sorted.slice(0, STAGES[2].cutoff).map(t=>t.name);
+        startStage(3, nextNames);
+      }else{
+        alert(`Şampiyon: ${sorted[0]?.name || '-'}`);
+      }
+    }
+
+    function resetAll(){
+      stopTimer();
+      state.teams = [];
+      state.activeTeamNames = [];
+      state.stageIndex = 0;
+      state.stageName = '';
+      state.stagePlan = null;
+      state.stageTotalQuestions = 0;
+      state.stageAskedCount = 0;
+      state.tieBreak = false;
+      state.tieCandidates = [];
+      state.currentQuestion = null;
+      state.usedQuestionIds = new Set();
+
+      $('stagePill').classList.add('d-none');
+      $('subStagePill').classList.add('d-none');
+      $('teamTextarea').value = '';
+      $('btnBeginStage1').disabled = true;
+
+      QUESTION_BANK = generatePlaceholderQuestions();
+      showScreen('screenWelcome');
+    }
+
+    /***********************
+     *  EVENTS
+     ***********************/
+    $('btnStart').addEventListener('click', ()=> showScreen('screenTeams'));
+
+    $('btnDemoFill').addEventListener('click', ()=>{
+      $('teamTextarea').value = [
+        'Konya City',
+        'Ankara Resüs',
+        'İzmir Şok',
+        'Bursa Monitor',
+        'Antalya Triage',
+        'Samsun USG',
+        'Adana Travma',
+        'İstanbul EKG'
+      ].join('\\n');
+      showScreen('screenTeams');
+    });
+
+    $('btnClearTeams').addEventListener('click', ()=>{
+      $('teamTextarea').value = '';
+      $('btnBeginStage1').disabled = true;
+    });
+
+    $('btnParseTeams').addEventListener('click', ()=>{
+      const lines = $('teamTextarea').value
+        .split('\\n')
+        .map(s=>s.trim())
+        .filter(Boolean);
+
+      const uniq = [];
+      for(const n of lines){
+        if(!uniq.includes(n)) uniq.push(n);
+      }
+
+      state.teams = uniq.map(name => ({ name, score:0 }));
+      $('btnBeginStage1').disabled = state.teams.length < 2;
+      alert(`Takımlar kaydedildi: ${state.teams.length} takım`);
+    });
+
+    $('btnBeginStage1').addEventListener('click', ()=>{
+      state.teams.forEach(t=> t.score = 0);
+      state.usedQuestionIds = new Set();
+      state.tieBreak = false;
+      state.tieCandidates = [];
+
+      const participantNames = state.teams.map(t=>t.name);
+      startStage(1, participantNames);
+    });
+
+    $('btnShowAnswer').addEventListener('click', highlightAnswer);
+
+    $('btnEnterPoints').addEventListener('click', buildPointsModal);
+
+    $('btnSavePoints').addEventListener('click', ()=>{
+      savePointsFromModal();
+
+      if(state.tieBreak){
+        const candSorted = sortTeamsByScore(state.tieCandidates);
+        const top = candSorted[0]?.score ?? 0;
+        const allSame = candSorted.every(t=>t.score === top);
+        if(!allSame){
+          state.tieBreak = false;
+          state.tieCandidates = [];
+        }
+      }
+    });
+
+    $('btnNextQuestion').addEventListener('click', ()=>{
+      // Normal tur soruları bitti ise tabloya geç
+      if(!state.tieBreak && state.stageAskedCount >= state.stageTotalQuestions){
+        showScoreboardForStage();
+        return;
+      }
+      // Tie-break bittiyse ve normal tur zaten bittiyse tablo
+      if(!state.tieBreak && state.stageAskedCount >= state.stageTotalQuestions){
+        showScoreboardForStage();
+        return;
+      }
+      nextQuestion();
+    });
+
+    $('btnProceedNextStage').addEventListener('click', proceedFromScoreboard);
+
+    $('btnBackToTeams').addEventListener('click', ()=>{
+      resetAll();
+      showScreen('screenTeams');
+    });
+
+    $('btnAbort').addEventListener('click', ()=>{
+      if(confirm('Yarışmayı sıfırlamak istiyor musunuz? Tüm puanlar ve sorular sıfırlanır.')){
+        resetAll();
+      }
+    });
+
+    document.addEventListener('visibilitychange', ()=>{
+      if(document.hidden) stopTimer();
+    });
+
+    // İlk açılışta
+    updateLiveScoreboard();
+  </script>
+</body>
+</html>
