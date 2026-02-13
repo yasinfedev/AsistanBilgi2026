@@ -226,6 +226,33 @@
   display: block;
   object-fit: cover;
 }
+
+    #btnStart:disabled{
+  opacity: 1;          /* soluklaşmasın */
+  cursor: default;
+  pointer-events: none;
+  background: #212529;
+  border-color: #212529;
+}
+
+    /* Welcome banner alanı: ekrana sığdır */
+.welcome-banner{
+  margin-top: 1rem;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 10px 24px rgba(0,0,0,.10);
+
+  /* ✅ ekran yüksekliğine göre sınır */
+  max-height: min(44vh, 380px);
+}
+
+.welcome-banner img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        /* taşanı kırpar, banner gibi durur */
+  display: block;
+}
     
   </style>
 </head>
@@ -259,7 +286,7 @@
           <div class="col-lg-5">
             <div class="cardx p-4">
               <div class="d-grid gap-2">
-                <button id="btnStart" class="btn btn-dark btn-xl">HOŞ GELDİNİZ!</button>
+                <button id="btnStart" class="btn btn-dark btn-xl" disabled>HOŞ GELDİNİZ!</button>
                 <button id="btnDemoFill" class="btn btn-outline-secondary btn-xl">
                   Takım İsimlerini Girin
                 </button>
@@ -272,10 +299,10 @@
         </div>
       </div>
       <!-- ✅ KONGRE BANNER -->
-  <div class="congress-banner">
-    <img src="https://acil42.com/wp-content/uploads/2026/02/Ekran-Resmi-2026-02-13-18.11.12.png"
-         alt="April Congress 2026 Banner">
-  </div>
+  <div class="welcome-banner">
+  <img src="https://acil42.com/wp-content/uploads/2026/02/Ekran-Resmi-2026-02-13-18.11.12.png"
+       alt="April Congress 2026">
+</div>
     </section>
 
     <!-- SCREEN: TEAMS -->
