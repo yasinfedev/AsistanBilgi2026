@@ -467,6 +467,7 @@ Ankara Resüs
                 <th style="width:70px;">Sıra</th>
                 <th>Takım</th>
                 <th class="text-end">Toplam Puan</th>
+                <th class="text-end d-none" id="thTieExtra">Tie-break Ekstra</th>
                 <th class="text-end">Durum</th>
               </tr>
             </thead>
@@ -1095,6 +1096,7 @@ Ankara Resüs
       pendingComp: null,             // { amount:number, names:[...] } -> sonraki aşama başında eklenecek
       tieBreakBaseScores: {},     // tie-break başlarken adayların skor snapshot'ı
 tieBreakExtra: {},          // tie-break boyunca adayların kazandığı "ek puan" (toplam skora yazılmayacak)
+      stageTieExtra: {},          // bu aşamada tie-break’ten gelen ekstra puanlar (sıralama kriteri)
     };
 
     const STAGES = [
@@ -1156,10 +1158,21 @@ function stopStandby(){
     }
 
     function sortTeamsByScore(names){
-      return getTeamsByNames(names)
-        .slice()
-        .sort((a,b)=> b.score - a.score || a.name.localeCompare(b.name,'tr'));
-    }
+  return getTeamsByNames(names)
+    .slice()
+    .sort((a,b)=>{
+      const dScore = b.score - a.score;
+      if(dScore !== 0) return dScore;
+
+      // ✅ Tie-break ekstra varsa ikinci kriter
+      const ax = state.stageTieExtra?.[a.name] || 0;
+      const bx = state.stageTieExtra?.[b.name] || 0;
+      const dExtra = bx - ax;
+      if(dExtra !== 0) return dExtra;
+
+      return a.name.localeCompare(b.name,'tr');
+    });
+}
 
     function formatStagePills(){
       $('stagePill').classList.remove('d-none');
@@ -1398,6 +1411,7 @@ function cssSafe(s){
   if(state.tieBreak){
     // ✅ Tie-break: toplam skora yazma, sadece "ekstra"ya yaz
     state.tieBreakExtra[name] = (state.tieBreakExtra[name] || 0) + pts;
+state.stageTieExtra[name] = (state.stageTieExtra[name] || 0) + pts;  // ✅ sıralamaya yansıyacak
   }else{
     // ✅ Normal tur: toplam skora yaz
     const team = state.teams.find(t=>t.name===name);
@@ -1422,6 +1436,7 @@ function cssSafe(s){
       state.tieBreak = false;
       state.tieCandidates = [];
       state.activeTeamNames = participantNames.slice();
+      state.stageTieExtra = {};   // ✅ yeni aşamaya temiz başla
             // ✅ Önceki aşamadan tie-break kompanzasyonu varsa, yeni aşama başında uygula
       if(state.pendingComp && state.pendingComp.amount > 0){
         const { amount, names } = state.pendingComp;
@@ -1475,19 +1490,29 @@ function cssSafe(s){
     }
 
     function computeCutoffTie(names, cutoff){
-      const sorted = sortTeamsByScore(names);
-      if(sorted.length <= cutoff) return { hasTie:false, tiedNames:[] };
+  const sorted = sortTeamsByScore(names);
+  if(sorted.length <= cutoff) return { hasTie:false, tiedNames:[] };
 
-      const cutoffScore = sorted[cutoff-1].score;
+  const at = sorted[cutoff-1];
+  const next = sorted[cutoff];
 
-      const tiedGroup = sorted.filter(t => t.score === cutoffScore).map(t=>t.name);
-      const positions = tiedGroup.map(n => sorted.findIndex(t=>t.name===n));
-      const minPos = Math.min(...positions);
-      const maxPos = Math.max(...positions);
+  const atExtra = state.stageTieExtra?.[at.name] || 0;
+  const nextExtra = state.stageTieExtra?.[next.name] || 0;
 
-      const tieAffectsCutoff = (minPos <= cutoff-1) && (maxPos >= cutoff);
-      return { hasTie: tieAffectsCutoff, tiedNames: tieAffectsCutoff ? tiedGroup : [] };
-    }
+  // ✅ Cutoff sınırında (score+extra) aynıysa tie-break gerekir
+  const boundaryTie = (at.score === next.score) && (atExtra === nextExtra);
+  if(!boundaryTie) return { hasTie:false, tiedNames:[] };
+
+  // Aynı (score+extra) anahtarına sahip tüm takımları aday yap
+  const keyScore = at.score;
+  const keyExtra = atExtra;
+
+  const tiedNames = sorted
+    .filter(t => t.score === keyScore && ((state.stageTieExtra?.[t.name] || 0) === keyExtra))
+    .map(t => t.name);
+
+  return { hasTie:true, tiedNames };
+}
 
     function showScoreboardForStage(){
   startStandby();
@@ -1495,6 +1520,9 @@ function cssSafe(s){
 
   const sorted = sortTeamsByScore(state.activeTeamNames);
   const cutoff = state.cutoff;
+
+      const showExtraCol = (state.stageIndex !== 3) && Object.keys(state.stageTieExtra || {}).length > 0;
+$('thTieExtra').classList.toggle('d-none', !showExtraCol);
 
   $('scoreboardTitle').textContent = `${state.stageName} Puan Tablosu`;
   if(state.stageIndex === 1){
@@ -1519,18 +1547,24 @@ function cssSafe(s){
     if(idx===2) tr.classList.add('rank-3');
     if(idx===3) tr.classList.add('rank-4');
 
+    const extra = state.stageTieExtra?.[t.name];
+const extraCell = showExtraCol
+  ? `<td class="text-end fw-bold">${typeof extra === 'number' && extra > 0 ? extra : '—'}</td>`
+  : '';
+
     tr.innerHTML = `
-      <td class="fw-bold">${idx+1}</td>
-      <td class="fw-bold">${escapeHtml(t.name)}</td>
-      <td class="text-end fw-bold fs-5">${t.score}</td>
-      <td class="text-end">
-        <span class="badge ${status==='Üst Tura' ? 'text-bg-success' :
-                            status==='Elendi' ? 'text-bg-secondary' :
-                            status==='ŞAMPİYON' ? 'text-bg-success' : 'text-bg-light'}">
-          ${status}
-        </span>
-      </td>
-    `;
+  <td class="fw-bold">${idx+1}</td>
+  <td class="fw-bold">${escapeHtml(t.name)}</td>
+  <td class="text-end fw-bold fs-5">${t.score}</td>
+  ${extraCell}
+  <td class="text-end">
+    <span class="badge ${status==='Üst Tura' ? 'text-bg-success' :
+                        status==='Elendi' ? 'text-bg-secondary' :
+                        status==='ŞAMPİYON' ? 'text-bg-success' : 'text-bg-light'}">
+      ${status}
+    </span>
+  </td>
+`;
     tbody.appendChild(tr);
   });
 
