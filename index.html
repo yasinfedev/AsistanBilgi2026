@@ -1673,7 +1673,7 @@ function resetAll(){
         'Samsun USG',
         'Adana Travma',
         'İstanbul EKG'
-      ].join('\\n');
+      ].join('\n');
       showScreen('screenTeams');
     });
 
@@ -1683,20 +1683,23 @@ function resetAll(){
     });
 
     $('btnParseTeams').addEventListener('click', ()=>{
-      const lines = $('teamTextarea').value
-        .split('\\n')
-        .map(s=>s.trim())
-        .filter(Boolean);
+  // ✅ Hem gerçek satır sonlarını hem de "\n" yazısını destekle
+  const raw = $('teamTextarea').value.replace(/\\n/g, '\n');
 
-      const uniq = [];
-      for(const n of lines){
-        if(!uniq.includes(n)) uniq.push(n);
-      }
+  const lines = raw
+    .split(/\r?\n/)          // ✅ gerçek newline (Mac/Win)
+    .map(s=>s.trim())
+    .filter(Boolean);
 
-      state.teams = uniq.map(name => ({ name, score:0 }));
-      $('btnBeginStage1').disabled = state.teams.length < 2;
-      alert(`Takımlar kaydedildi: ${state.teams.length} takım`);
-    });
+  const uniq = [];
+  for(const n of lines){
+    if(!uniq.includes(n)) uniq.push(n);
+  }
+
+  state.teams = uniq.map(name => ({ name, score:0 }));
+  $('btnBeginStage1').disabled = state.teams.length < 2;
+  alert(`Takımlar kaydedildi: ${state.teams.length} takım`);
+});
 
     $('btnBeginStage1').addEventListener('click', ()=>{
       state.teams.forEach(t=> t.score = 0);
