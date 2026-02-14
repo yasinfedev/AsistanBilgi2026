@@ -123,6 +123,16 @@
       letter-spacing: -.04em;
       line-height: 1;
     }
+
+    /* ✅ Timer default: siyah */
+.timer-normal{
+  color:#212529;
+}
+
+/* ✅ Son 10 saniye: koyu kırmızı */
+.timer-danger{
+  color:#8b0000; /* koyu kırmızı */
+}
     .meta-chip{
       border-radius: 999px;
       padding: .45rem .75rem;
@@ -263,7 +273,7 @@
     <div class="container-fluid px-3 px-md-4 d-flex align-items-center justify-content-between">
       <div class="brand-badge">
         <span class="badge text-bg-dark rounded-pill">ATUDER</span>
-        <span>Acil Tıp Asistan Bilgi Yarışması 2026 | Bilgi Yarışması Modülü (BİLYAM) - v1.10.26 | © yamizey yazılım</span>
+        <span>Acil Tıp Asistan Bilgi Yarışması 2026 | Bilgi Yarışması Modülü (BİLYAM) - v1.10.27 | © yamizey yazılım</span>
       </div>
       <div class="d-flex align-items-center gap-2">
         <span id="stagePill" class="stage-pill d-none">AŞAMA</span>
@@ -1270,16 +1280,26 @@ function setArenaTheme(catKey){
       $('timerBar').style.width = '100%';
 
       state.timer.interval = setInterval(()=>{
-        state.timer.remaining -= 1;
-        const pct = Math.max(0, (state.timer.remaining / state.timer.seconds) * 100);
-        $('timerBig').textContent = state.timer.remaining;
-        $('timerBar').style.width = pct + '%';
+  state.timer.remaining -= 1;
 
-        if(state.timer.remaining <= 0){
-          stopTimer();
-          onTimeUp();
-        }
-      }, 1000);
+  const pct = Math.max(0, (state.timer.remaining / state.timer.seconds) * 100);
+  $('timerBig').textContent = state.timer.remaining;
+  $('timerBar').style.width = pct + '%';
+
+  // 🔴 Son 10 saniye koyu kırmızı
+  if(state.timer.remaining <= 10){
+    $('timerBig').classList.add('timer-danger');
+    $('timerBig').classList.remove('timer-normal');
+  }else{
+    $('timerBig').classList.add('timer-normal');
+    $('timerBig').classList.remove('timer-danger');
+  }
+
+  if(state.timer.remaining <= 0){
+    stopTimer();
+    onTimeUp();
+  }
+}, 1000);
     }
 
     function stopTimer(){
@@ -1351,6 +1371,9 @@ resetQuestionButtons();
 stopTimer();
 $('timerBig').textContent = state.timer.seconds;
 $('timerBar').style.width = '100%';
+      // ✅ Timer rengi her soruda sıfırlansın (siyah)
+$('timerBig').classList.add('timer-normal');
+$('timerBig').classList.remove('timer-danger');
 
 // ✅ Butonlar
 $('btnStartTimer').classList.remove('d-none');     // süreyi başlat görünsün
