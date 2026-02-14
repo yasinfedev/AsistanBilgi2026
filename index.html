@@ -1093,6 +1093,8 @@ Ankara Resüs
             tieBreakQuestionsAsked: 0,     // tie-breakte kaç soru soruldu
       tieSafeNames: [],              // cutoff puanının üstünde kalan "güvenli" takımlar
       pendingComp: null,             // { amount:number, names:[...] } -> sonraki aşama başında eklenecek
+      tieBreakBaseScores: {},     // tie-break başlarken adayların skor snapshot'ı
+tieBreakExtra: {},          // tie-break boyunca adayların kazandığı "ek puan" (toplam skora yazılmayacak)
     };
 
     const STAGES = [
@@ -1393,9 +1395,15 @@ function cssSafe(s){
     const name = r.getAttribute('data-team');
     const isCorrect = r.getAttribute('data-correct') === "1";
     if(isCorrect){
-      const team = state.teams.find(t=>t.name===name);
-      if(team) team.score += pts; // ✅ otomatik puan ekle
-    }
+  if(state.tieBreak){
+    // ✅ Tie-break: toplam skora yazma, sadece "ekstra"ya yaz
+    state.tieBreakExtra[name] = (state.tieBreakExtra[name] || 0) + pts;
+  }else{
+    // ✅ Normal tur: toplam skora yaz
+    const team = state.teams.find(t=>t.name===name);
+    if(team) team.score += pts;
+  }
+}
   });
 
   updateLiveScoreboard();
@@ -1541,6 +1549,15 @@ function cssSafe(s){
       .filter(t => t.score > cutoffScore)
       .map(t => t.name);
 
+    // ✅ Tie-break başlarken: adayların skorunu snapshot al, ek puanları sıfırla
+state.tieBreakBaseScores = {};
+state.tieBreakExtra = {};
+state.tieCandidates.forEach(n=>{
+  const team = state.teams.find(t=>t.name===n);
+  state.tieBreakBaseScores[n] = team ? team.score : 0;
+  state.tieBreakExtra[n] = 0;
+});
+
     stopStandby();
     showScreen('screenQuestion');
     nextQuestion();
@@ -1673,30 +1690,35 @@ pointsModalEl.addEventListener('hidden.bs.modal', ()=>{
 
       
 
-            if(state.tieBreak){
-        const candSorted = sortTeamsByScore(state.tieCandidates);
-        const top = candSorted[0]?.score ?? 0;
-        const allSame = candSorted.every(t=>t.score === top);
+if(state.tieBreak){
+  // ✅ Tie-break sıralaması: sadece ekstra puana göre
+  const candSorted = state.tieCandidates
+    .map(n => ({
+      name: n,
+      extra: state.tieBreakExtra[n] || 0
+    }))
+    .sort((a,b)=> b.extra - a.extra || a.name.localeCompare(b.name,'tr'));
 
-        if(!allSame){
-          // ✅ tie-break bitti -> güvenli takımlara kompanzasyon hazırla
-          const compAmount = state.tieBreakQuestionsAsked * CATEGORY.BONUS.points; // N * 5
+  const topExtra = candSorted[0]?.extra ?? 0;
+  const allSame = candSorted.every(x => x.extra === topExtra);
 
-          // Sadece 1. aşama veya 2. aşamada anlamlı (sonraki aşama varsa)
-          if(state.stageIndex === 1 || state.stageIndex === 2){
-            state.pendingComp = {
-              amount: compAmount,
-              names: state.tieSafeNames.slice()
-            };
-          }
+  if(!allSame){
+    // ✅ Tie-break çözüldü: toplam skorları geri garanti et (zaten değişmedi ama net olsun)
+    state.tieCandidates.forEach(n=>{
+      const team = state.teams.find(t=>t.name===n);
+      if(team) team.score = state.tieBreakBaseScores[n] ?? team.score;
+    });
 
-          // ✅ tie-break temizle
-          state.tieBreak = false;
-          state.tieCandidates = [];
-          state.tieSafeNames = [];
-          state.tieBreakQuestionsAsked = 0;
-        }
-      }
+    // ✅ Tie-break temizle
+    state.tieBreak = false;
+    state.tieCandidates = [];
+    state.tieSafeNames = [];
+    state.tieBreakQuestionsAsked = 0;
+    state.pendingComp = null; // artık kompanzasyona gerek yok
+    state.tieBreakBaseScores = {};
+    state.tieBreakExtra = {};
+  }
+}
     });
 
     $('btnNextQuestion').addEventListener('click', ()=>{
